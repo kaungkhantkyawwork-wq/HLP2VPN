@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:hiddify/utils/platform_utils.dart';
 
 const _light = Color(0xFFFBF8FF);
@@ -52,7 +51,7 @@ class _Splash extends StatelessWidget {
     final dark = View.of(context).platformDispatcher.platformBrightness == Brightness.dark;
     return ColoredBox(
       color: dark ? _dark : _light,
-      child: Center(child: SvgPicture.asset('assets/images/logo.svg', width: 96, height: 96)),
+      child: Center(child: Image.asset('assets/images/source/logo.png', width: 160, height: 84, fit: BoxFit.contain)),
     );
   }
 }

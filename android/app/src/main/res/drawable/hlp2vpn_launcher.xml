@@ -1,9 +1,3 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="432" android:viewportHeight="432">
-<path android:fillColor="#020817" android:pathData="M0,0h432v432h-432z"/>
-<path android:fillColor="#071B3A" android:pathData="M54,12h324a42,42 0,0 1,42 42v324a42,42 0,0 1,-42 42h-324a42,42 0,0 1,-42 -42v-324a42,42 0,0 1,42 -42z"/>
-<path android:fillColor="#00000000" android:strokeColor="#00DFFF" android:strokeWidth="9" android:pathData="M64,30h304a34,34 0,0 1,34 34v304a34,34 0,0 1,-34 34h-304a34,34 0,0 1,-34 -34v-304a34,34 0,0 1,34 -34z"/>
-<path android:fillColor="#00DFFF" android:pathData="M151,112h86l-35,121h-82z"/>
-<path android:fillColor="#BDEEFF" android:pathData="M261,112h77l-35,121h-78z"/>
-<path android:fillColor="#FFFFFF" android:pathData="M88,307h95l-18,40h-115zM251,307h91l-19,40h-91z"/>
-<path android:fillColor="#00000000" android:strokeColor="#00DFFF" android:strokeWidth="17" android:strokeLineCap="round" android:pathData="M62,285 C105,338 210,280 349,190 C387,165 381,130 351,119"/>
-</vector>
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/hlp2vpn_app_icon"
+    android:gravity="center" />

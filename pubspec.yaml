@@ -166,6 +166,7 @@ flutter:
     # - assets/core/geoip.db
     # - assets/core/geosite.db
     - assets/images/logo.svg
+    - assets/images/source/logo.png
     - assets/images/tray_icon.ico
     - assets/images/tray_icon.png
     - assets/images/tray_icon_dark.ico
@@ -202,12 +203,12 @@ flutter_gen:
 flutter_native_splash:
   color: "#FBF8FF"
   color_dark: "#121318"
-  image: assets/images/source/ic_launcher_splash.png
+  image: assets/images/source/hlp2vpn_app_icon.png
   android_gravity: center
   android_12:
     color: "#FBF8FF"
     color_dark: "#121318"
-    image: assets/images/source/ic_launcher_foreground.png
+    image: assets/images/source/hlp2vpn_app_icon.png
 
 ffigen:
   name: "HiddifyCoreNativeLibrary"
