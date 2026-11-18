@@ -33,12 +33,14 @@ abstract final class NativeSplash {
     if (kIsWeb || _removed) return;
     _removed = true;
 
-    // Keep the branded Flutter splash visible long enough to be perceived.
-    // Android's native launch splash is only a hand-off; this overlay bridges
-    // bootstrap and the first real route (including the first-run intro page).
+    // Release Android's held first frame first. The Flutter splash overlay
+    // is already mounted above the app, so it takes over from the native
+    // launch screen without flashing the intro/home route.
+    if (!_drawn) FlutterNativeSplash.remove();
+
+    // Keep the branded HLP2VPN splash visible after the hand-off.
     Future<void>.delayed(const Duration(milliseconds: 2200), () {
       _showing.value = false;
-      if (!_drawn) FlutterNativeSplash.remove();
     });
   }
 }
