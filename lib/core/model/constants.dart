@@ -3,11 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:hiddify/utils/utils.dart';
 
 abstract class Constants {
-  static const appName = "Hiddify";
-  static const githubUrl = "https://github.com/hiddify/hiddify-next";
+  static const appName = "HLP2VPN";
+  static const githubUrl = "https://github.com/kaungkhantkyawwork-wq/HLP2VPN";
   static const licenseUrl = "https://github.com/hiddify/hiddify-next?tab=License-1-ov-file#readme";
-  static const githubReleasesApiUrl = "https://api.github.com/repos/hiddify/hiddify-app/releases";
-  static const githubLatestReleaseUrl = "https://github.com/hiddify/hiddify-app/releases/latest";
+  static const githubReleasesApiUrl = "https://api.github.com/repos/kaungkhantkyawwork-wq/HLP2VPN/releases";
+  static const githubLatestReleaseUrl = "https://github.com/kaungkhantkyawwork-wq/HLP2VPN/releases/latest";
   static const telegramChannelUrl = "https://t.me/hiddify";
   static const telegramChannelHandle = "@hiddify";
 
