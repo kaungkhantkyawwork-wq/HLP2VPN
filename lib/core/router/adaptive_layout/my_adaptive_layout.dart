@@ -124,7 +124,8 @@ class MyAdaptiveLayout extends HookConsumerWidget {
                       Expanded(child: Semantics(container: true, child: navigationShell)),
                     ],
                   ),
-            bottomNavigationBar: isMobileBreakpoint
+            bottomNavigationBar: isMobileBreakpoint &&
+                    navigationShell.currentIndex != getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'home')
                 ? FocusScope(
                     node: navScopeNode,
                     child: NavigationBar(
