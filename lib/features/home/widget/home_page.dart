@@ -118,6 +118,8 @@ class HomePage extends HookConsumerWidget {
                             const Center(child: ConnectionButton()),
                             const Gap(22),
                             const _LiveNetworkPanel(),
+                            const Gap(12),
+                            const _DataIpPanel(),
                             const Gap(14),
                             const ActiveProxyFooter(),
                           ]),
@@ -389,6 +391,116 @@ class _LiveNetworkPanel extends HookConsumerWidget {
   }
 }
 
+
+/// Live transfer total and exit IP. Values come from the VPN core/IP lookup, never demo data.
+class _DataIpPanel extends HookConsumerWidget {
+  const _DataIpPanel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final stats = ref.watch(statsNotifierProvider).valueOrNull;
+    final connected = ref.watch(
+      connectionNotifierProvider.select((s) => s.valueOrNull is Connected),
+    );
+    final ipState = ref.watch(ipInfoNotifierProvider);
+    final ip = connected ? (ipState.valueOrNull?.ip ?? (ipState.isLoading ? 'Checking…' : '--')) : '--';
+    final total = connected ? (stats?.downlinkTotal ?? 0).size() : '0 B';
+    const border = Color(0xFF168DFF);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF08264B), Color(0xFF04152D)],
+          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: border, width: 1.1),
+          boxShadow: const [BoxShadow(color: Color(0x44108FFF), blurRadius: 22)],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: _InfoMetric(
+                icon: Icons.bar_chart_rounded,
+                color: const Color(0xFF19D9FF),
+                label: 'Data Used',
+                value: total,
+              ),
+            ),
+            Container(width: 1, height: 48, color: border.withValues(alpha: .45)),
+            Expanded(
+              child: _InfoMetric(
+                icon: Icons.language_rounded,
+                color: const Color(0xFF19D9FF),
+                label: 'IP Address',
+                value: ip,
+                onTap: connected ? () => ref.read(ipInfoNotifierProvider.notifier).refresh() : null,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _InfoMetric extends StatelessWidget {
+  const _InfoMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(14),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: .13),
+              border: Border.all(color: color.withValues(alpha: .7)),
+            ),
+            child: Icon(icon, color: color, size: 25),
+          ),
+          const Gap(9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white70)),
+                const Gap(4),
+                Text(value, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: Colors.white, fontWeight: FontWeight.w800)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
 class _NetworkMetric extends StatelessWidget {
   const _NetworkMetric({
     required this.icon,
@@ -431,9 +543,9 @@ class _NetworkMetric extends StatelessWidget {
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
                 if (unit.isNotEmpty)
-                  TextSpan(text: ' $unit', style: theme.textTheme.labelSmall),
+                  TextSpan(text: ' $unit', style: theme.textTheme.labelSmall?.copyWith(color: Colors.white70)),
               ],
             ),
           ),
