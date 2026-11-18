@@ -98,7 +98,8 @@
   "intro": {
     "banner": "ကန့်သတ်ချက်မရှိသော အင်တာနက်အတွက် လိုအပ်သမျှ",
     "termsAndPolicyCaution(rich)": "ဆက်လုပ်ခြင်းဖြင့် ${tap(@:pages.about.termsAndConditions)} ကို သဘောတူပါသည်",
-    "info(rich)": "Hiddify မှ ❤️ ဖြင့် ပြုလုပ်ထားသည်။ ${tap_source(ဖွင့်လှစ်ထားသော ကုဒ်)} နှင့် ${tap_license(လိုင်စင်)}"
+    "info(rich)": "Hiddify မှ ❤️ ဖြင့် ပြုလုပ်ထားသည်။ ${tap_source(ဖွင့်လှစ်ထားသော ကုဒ်)} နှင့် ${tap_license(လိုင်စင်)}",
+    "info": "HLP2VPN မှ ❤️ ဖြင့် ပြုလုပ်ထားသည်။ ${tap_source(ဖွင့်လှစ်ထားသော ကုဒ်)} နှင့် ${tap_license(လိုင်စင်)}"
   },
   "pages": {
     "home": {
