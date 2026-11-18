@@ -22,17 +22,9 @@ part 'app_update_notifier.g.dart';
 /// lookup by bundle id would find the iOS app, which has the same one.
 @riverpod
 Upgrader? upgrader(Ref ref) {
-  final release = ref.watch(appInfoProvider).requireValue.release;
-  final store = switch (release) {
-    Release.googlePlay when PlatformUtils.isAndroid => UpgraderPlayStore(),
-    Release.appStore when PlatformUtils.isIOS => UpgraderAppStore(),
-    _ => null,
-  };
-  if (store == null) return null;
-  return Upgrader(
-    storeController: UpgraderStoreController(onAndroid: () => store, oniOS: () => store),
-    messages: UpgraderMessages(code: ref.watch(localePreferencesProvider).languageCode),
-  );
+  // HLP2VPN is distributed independently from Hiddify stores. Never show the
+  // upstream Hiddify / Play Store upgrade prompt in this fork.
+  return null;
 }
 
 @Riverpod(keepAlive: true)
