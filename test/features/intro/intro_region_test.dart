@@ -67,31 +67,14 @@ void main() {
   Future<void> pickLanguage(WidgetTester tester, AppLocale l) =>
       pick(tester, t().pages.settings.general.locale, l.localeName);
 
-  testWidgets('the region can be changed after the time zone picked one', (tester) async {
+  testWidgets('first start offers only English and Myanmar language choices, without a region picker', (tester) async {
     await show(tester);
-    final other = region() == Region.cn ? Region.tr : Region.cn;
-    await pickRegion(tester, other);
-    expect(region(), other);
-  });
-
-  testWidgets('picking Persian sets Iran', (tester) async {
-    await show(tester);
-    await pickLanguage(tester, AppLocale.ru);
-    await pickLanguage(tester, AppLocale.fa);
-    expect(region(), Region.ir);
-  });
-
-  testWidgets('the language replaces a region guessed from the time zone', (tester) async {
-    await show(tester);
-    await pickLanguage(tester, AppLocale.zhCn);
-    expect(region(), Region.cn);
-  });
-
-  testWidgets('a region the user picked stays when the language changes', (tester) async {
-    await show(tester);
-    await pickRegion(tester, Region.tr);
-    await pickLanguage(tester, AppLocale.fa);
-    expect(region(), Region.tr);
+    expect(find.text(t().pages.settings.routing.region), findsNothing);
+    await tester.tap(find.text(t().pages.settings.general.locale));
+    await settle(tester);
+    expect(find.text('English'), findsOneWidget);
+    expect(find.text('မြန်မာဘာသာ'), findsOneWidget);
+    expect(find.text('فارسی'), findsNothing);
   });
 
   test('a language spoken in no listed region leaves the region alone; Persian keeps Afghanistan', () {
