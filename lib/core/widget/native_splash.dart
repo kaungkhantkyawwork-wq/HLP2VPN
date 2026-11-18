@@ -29,16 +29,14 @@ abstract final class NativeSplash {
   }
 
   /// The app, under the splash while it is up (desktop).
-  static Widget cover(Widget app) => _drawn ? _SplashCover(child: app) : app;
+  static Widget cover(Widget app) => !kIsWeb ? _SplashCover(child: app) : app;
 
   /// Lets Flutter's frames through: the splash goes.
   static void remove() {
     if (kIsWeb || _removed) return;
     _removed = true;
-    if (_drawn) {
-      _showing.value = false;
-      return;
-    }
+    _showing.value = false;
+    if (_drawn) return;
     FlutterNativeSplash.remove();
   }
 }
@@ -48,10 +46,12 @@ class _Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dark = View.of(context).platformDispatcher.platformBrightness == Brightness.dark;
-    return ColoredBox(
-      color: dark ? _dark : _light,
-      child: Center(child: Image.asset('assets/images/source/logo.png', width: 160, height: 84, fit: BoxFit.contain)),
+    return SizedBox.expand(
+      child: Image.asset(
+        'assets/images/source/hlp2vpn_splash.png',
+        fit: BoxFit.cover,
+        alignment: Alignment.center,
+      ),
     );
   }
 }
