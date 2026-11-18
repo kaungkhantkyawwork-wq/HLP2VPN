@@ -15,7 +15,6 @@ import 'package:hiddify/core/model/region.dart';
 import 'package:hiddify/core/preferences/general_preferences.dart';
 import 'package:hiddify/features/common/general_pref_tiles.dart';
 import 'package:hiddify/features/settings/data/config_option_repository.dart';
-import 'package:hiddify/features/settings/widget/preference_tile.dart';
 import 'package:hiddify/utils/utils.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
@@ -119,26 +118,12 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                   ),
                   const Gap(24),
                   LocalePrefTile(
+                    options: const [AppLocale.en, AppLocale.my],
                     // the language sets the region, even one guessed from the time zone, until the user picks one
                     onChanged: (locale) async {
                       if (_regionChosenByUser) return;
                       final region = regionForLocale(locale, ref.read(ConfigOptions.region));
                       if (region != null) await _setRegion(ref, region);
-                    },
-                  ),
-                  ChoicePreferenceWidget(
-                    selected: ref.watch(ConfigOptions.region),
-                    preferences: ref.watch(ConfigOptions.region.notifier),
-                    choices: Region.values,
-                    title: t.pages.settings.routing.region,
-                    showFlag: true,
-                    icon: Icons.place_rounded,
-                    presentChoice: (value) => value.present(t),
-                    // with autoUpdate on, onChanged was never called and the direct DNS kept the old region's
-                    autoUpdate: false,
-                    onChanged: (region) async {
-                      _regionChosenByUser = true;
-                      await _setRegion(ref, region);
                     },
                   ),
                   const EnableAnalyticsPrefTile(),
