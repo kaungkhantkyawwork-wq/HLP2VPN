@@ -167,6 +167,7 @@ flutter:
     # - assets/core/geosite.db
     - assets/images/logo.svg
     - assets/images/source/logo.png
+    - assets/images/source/hlp2vpn_full_logo.png
     - assets/images/source/hlp2vpn_splash.png
     - assets/images/source/hlp2vpn_header_logo.png
     - assets/images/tray_icon.ico
