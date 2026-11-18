@@ -97,13 +97,16 @@ class AboutPage extends HookConsumerWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Image.asset('assets/images/source/logo.png', width: 64, height: 64, fit: BoxFit.contain),
-                  const Gap(16),
                   Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(t.common.appTitle, style: Theme.of(context).textTheme.titleLarge),
-                      const Gap(4),
+                      Image.asset(
+                        'assets/images/source/hlp2vpn_full_logo.png',
+                        width: 260,
+                        height: 110,
+                        fit: BoxFit.contain,
+                      ),
+                      const Gap(8),
                       Text("${t.common.version} ${appInfo.presentVersion}"),
                     ],
                   ),
