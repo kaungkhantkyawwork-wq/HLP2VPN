@@ -108,7 +108,6 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                       final width = constraints.maxWidth > IntroConst.maxwidth
                           ? IntroConst.maxwidth
                           : constraints.maxWidth;
-                      final size = width * 0.4;
                       return Image.asset(
                         'assets/images/source/hlp2vpn_full_logo.png',
                         width: width,
