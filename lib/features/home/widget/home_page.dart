@@ -1,5 +1,6 @@
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:gap/gap.dart';
 import 'package:hiddify/core/app_info/app_info_provider.dart';
 import 'package:hiddify/core/localization/translations.dart';
@@ -21,214 +22,261 @@ import 'package:sliver_tools/sliver_tools.dart';
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
 
+  static const _navy = Color(0xFF020817);
+  static const _panel = Color(0xFF061B38);
+  static const _cyan = Color(0xFF08D9FF);
+  static const _blue = Color(0xFF167BFF);
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final t = ref.watch(translationsProvider).requireValue;
-    // final hasAnyProfile = ref.watch(hasAnyProfileProvider);
     final activeProfile = ref.watch(activeProfileProvider);
-
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        backgroundColor: Colors.transparent,
+    final darkTheme = theme.copyWith(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: _navy,
+      colorScheme: theme.colorScheme.copyWith(
+        brightness: Brightness.dark,
+        surface: _panel,
+        onSurface: Colors.white,
+        primary: _cyan,
+        secondary: _blue,
+        outline: const Color(0xFF167BFF),
+      ),
+      appBarTheme: theme.appBarTheme.copyWith(
+        backgroundColor: _navy,
         surfaceTintColor: Colors.transparent,
+        foregroundColor: Colors.white,
         elevation: 0,
-        title: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRect(
-              child: SizedBox(
-                width: 190,
-                height: 48,
+      ),
+    );
+
+    return Theme(
+      data: darkTheme,
+      child: Scaffold(
+        backgroundColor: _navy,
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          centerTitle: true,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: 210,
+                height: 54,
                 child: Image.asset(
                   'assets/images/source/hlp2vpn_header_logo.png',
-                  width: 190,
-                  fit: BoxFit.fitWidth,
-                  alignment: Alignment.center,
+                  fit: BoxFit.contain,
                 ),
+              ),
+              const Gap(6),
+              const AppVersionLabel(),
+            ],
+          ),
+          actions: [
+            Semantics(
+              key: const ValueKey("profile_add_button"),
+              label: 'Add server',
+              child: IconButton(
+                icon: const Icon(Icons.add_circle_outline_rounded, color: _cyan),
+                onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showAddProfile(),
               ),
             ),
             const Gap(6),
-            const AppVersionLabel(),
           ],
         ),
-        actions: [
-          // IconButton(
-          //     onPressed: () => const QuickSettingsRoute().push(context),
-          //     icon: const Icon(FluentIcons.options_24_filled),
-          //     material: (context, platform) => MaterialIconButtonData(
-          //           tooltip: t.config.quickSettings,
-          //         )),
-          // IconButton(
-          //     onPressed: () => const AddProfileRoute().push(context),
-          //     icon: const Icon(FluentIcons.add_circle_24_filled),
-          //     material: (context, platform) => MaterialIconButtonData(
-          //           tooltip: t.profile.add.buttonText,
-          //         )),
-          Semantics(
-            key: const ValueKey("profile_add_button"),
-            label: t.pages.profiles.add,
-            child: IconButton(
-              icon: const Icon(Icons.workspace_premium_rounded, color: Color(0xFFFFC928)),
-              onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showAddProfile(),
-            ),
-          ),
-          const Gap(8),
-        ],
-      ),
-      // The sky and the map are drawn once into their own layer: a ripple or a label changing on
-      // the page no longer redraws the whole map image under it.
-      body: Stack(
-        fit: StackFit.expand,
-        children: [
-          RepaintBoundary(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                // Deep navy atmosphere with a soft electric-blue glow around the connect button.
-                gradient: theme.brightness == Brightness.dark
-                    ? const RadialGradient(
-                        center: Alignment(0, -.15),
-                        radius: .95,
-                        colors: [Color(0xFF0B2445), Color(0xFF061A35), Color(0xFF020A19)],
-                        stops: [0, .48, 1],
-                      )                    : RadialGradient(
-                        center: const Alignment(0, -.15),
-                        radius: 1.1,
-                        colors: [
-                          Colors.white.withValues(alpha: .55),
-                          Colors.white.withValues(alpha: 0),
-                          Colors.black.withValues(alpha: .045),
-                        ],
-                        stops: const [0, .5, 1],
-                      ),
-                image: DecorationImage(
-                  image: const AssetImage('assets/images/world_map.png'), // Replace with your image path
-                  fit: BoxFit.cover,
-                  opacity: 0.09,
-                  colorFilter: theme.brightness == Brightness.dark
-                      ? ColorFilter.mode(Colors.white.withValues(alpha: .15), BlendMode.srcIn) //
-                      : ColorFilter.mode(
-                          Colors.grey.withValues(alpha: 1),
-                          BlendMode.srcATop,
-                        ), // Apply white tint in dark mode
-                ),
-              ),
-            ),
-          ),
-          Stack(
-            alignment: Alignment.center,
-            children: [
-              Center(
+        body: Stack(
+          children: [
+            const Positioned.fill(child: _PremiumHomeBackdrop()),
+            SafeArea(
+              top: false,
+              child: Center(
                 child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    maxWidth: 600, // Set the maximum width here
-                  ),
-                  // The page does not move under the finger: no bounce (iOS) or stretch (Android) when it
-                  // fits the screen. It still scrolls, without them, when it does not (a small screen or a
-                  // large font).
-                  child: ScrollConfiguration(
-                    behavior: ScrollConfiguration.of(context).copyWith(overscroll: false),
-                    child: CustomScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      slivers: [
-                        // switch (activeProfile) {
-                        // AsyncData(value: final profile?) =>
-                        MultiSliver(
-                          children: [
-                            // const Gap(100),
+                  constraints: const BoxConstraints(maxWidth: 620),
+                  child: CustomScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    slivers: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 108),
+                        sliver: SliverList(
+                          delegate: SliverChildListDelegate([
                             switch (activeProfile) {
-                              AsyncData(value: final profile?) => ProfileTile(
-                                profile: profile,
-                                isMain: true,
-                                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              AsyncData(value: final profile?) => _NeonCard(
+                                child: ProfileTile(
+                                  profile: profile,
+                                  isMain: true,
+                                  margin: EdgeInsets.zero,
+                                ),
                               ),
-                              _ => const Text(""),
+                              _ => const _NeonCard(
+                                child: Padding(
+                                  padding: EdgeInsets.all(16),
+                                  child: Text('Select a server to get started'),
+                                ),
+                              ),
                             },
-                            const SliverFillRemaining(
-                              hasScrollBody: false,
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        const Gap(10),
-                                        const ConnectionButton(),
-                                        const Gap(18),
-                                        const _LiveNetworkPanel(),
-                                        const Gap(12),
-                                      ],
-                                    ),
-                                  ),
-                                  ActiveProxyFooter(),
-                                  Gap(32),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        // AsyncData() => switch (hasAnyProfile) {
-                        //     AsyncData(value: true) => const EmptyActiveProfileHomeBody(),
-                        //     _ => const EmptyProfilesHomeBody(),
-                        //   },
-                        // AsyncError(:final error) => SliverErrorBodyPlaceholder(t.presentShortError(error)),
-                        // _ => const SliverToBoxAdapter(),
-                        // },
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              if (ref.watch(hasAnyProfileProvider).value ?? false)
-                Positioned(
-                  right: 0,
-                  left: 0,
-                  bottom: 0,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    // tabs of either height stand on the bottom edge
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      // in proxy mode, a smaller tab beside this one on how to point apps at the proxy
-                      const Flexible(child: LocalProxyHint()),
-                      Material(
-                        color: theme.colorScheme.primaryContainer,
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
-                        child: InkWell(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(16),
-                            topRight: Radius.circular(16),
-                          ),
-                          onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showQuickSettings(),
-                          child: Container(
-                            height: 32,
-                            padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(t.pages.home.quickSettings),
-                                const Gap(4),
-                                const Icon(Icons.arrow_drop_up_rounded, size: 16),
-                              ],
-                            ),
-                          ),
+                            const Gap(22),
+                            const Center(child: ConnectionButton()),
+                            const Gap(22),
+                            const _LiveNetworkPanel(),
+                            const Gap(14),
+                            const ActiveProxyFooter(),
+                          ]),
                         ),
                       ),
                     ],
                   ),
                 ),
-            ],
-          ),
-        ],
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: _HlpBottomNavigation(
+          onServers: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+          onSettings: () => context.goNamed('settings'),
+        ),
       ),
     );
   }
+}
+
+class _PremiumHomeBackdrop extends StatelessWidget {
+  const _PremiumHomeBackdrop();
+
+  @override
+  Widget build(BuildContext context) => DecoratedBox(
+    decoration: const BoxDecoration(
+      gradient: RadialGradient(
+        center: Alignment(0, -.35),
+        radius: 1.2,
+        colors: [Color(0xFF0B2C58), Color(0xFF061A35), Color(0xFF020817)],
+        stops: [0, .48, 1],
+      ),
+    ),
+    child: Stack(
+      children: [
+        Positioned(
+          top: 115,
+          left: -100,
+          right: -100,
+          child: Container(
+            height: 230,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(180),
+              border: Border.all(color: const Color(0x3310BFFF), width: 2),
+              boxShadow: const [BoxShadow(color: Color(0x3310AFFF), blurRadius: 55, spreadRadius: 2)],
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 80,
+          left: -80,
+          right: -80,
+          child: Container(
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(180),
+              border: Border.all(color: const Color(0x2210BFFF), width: 2),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+class _NeonCard extends StatelessWidget {
+  const _NeonCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    decoration: BoxDecoration(
+      gradient: const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF0A2B55), Color(0xFF04152E)],
+      ),
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: const Color(0xFF168DFF), width: 1.2),
+      boxShadow: const [
+        BoxShadow(color: Color(0x55108FFF), blurRadius: 22, spreadRadius: 1),
+        BoxShadow(color: Color(0x2210DFFF), blurRadius: 8),
+      ],
+    ),
+    child: ClipRRect(borderRadius: BorderRadius.circular(23), child: child),
+  );
+}
+
+class _HlpBottomNavigation extends StatelessWidget {
+  const _HlpBottomNavigation({required this.onServers, required this.onSettings});
+  final VoidCallback onServers;
+  final VoidCallback onSettings;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
+      child: Container(
+        height: 76,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [Color(0xFF08264C), Color(0xFF03152D)]),
+          borderRadius: BorderRadius.circular(38),
+          border: Border.all(color: const Color(0xFF168DFF), width: 1.2),
+          boxShadow: const [BoxShadow(color: Color(0x66108FFF), blurRadius: 20)],
+        ),
+        child: Row(
+          children: [
+            Expanded(child: _NavItem(icon: Icons.home_rounded, label: 'Home', selected: true, onTap: () {})),
+            Expanded(child: _NavItem(icon: Icons.dns_rounded, label: 'Servers', onTap: onServers)),
+            Expanded(child: _NavItem(icon: Icons.settings_rounded, label: 'Settings', onTap: onSettings)),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _NavItem extends StatelessWidget {
+  const _NavItem({required this.icon, required this.label, required this.onTap, this.selected = false});
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(4),
+    child: Material(
+      color: selected ? const Color(0xFF075C9E) : Colors.transparent,
+      borderRadius: BorderRadius.circular(34),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(34),
+        child: Container(
+          decoration: selected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(34),
+                  border: Border.all(color: const Color(0xFF08D9FF), width: 1.4),
+                  boxShadow: const [BoxShadow(color: Color(0xAA08BFFF), blurRadius: 18)],
+                )
+              : null,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 25, color: selected ? const Color(0xFF08E5FF) : Colors.white),
+              const Gap(3),
+              Text(label, style: TextStyle(
+                color: selected ? const Color(0xFF08E5FF) : Colors.white,
+                fontWeight: FontWeight.w700,
+                fontSize: 12,
+              )),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
 
 class AppVersionLabel extends HookConsumerWidget {
