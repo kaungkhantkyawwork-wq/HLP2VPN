@@ -32,6 +32,8 @@ jobs:
       - uses: ./.github/actions/setup-flutter
         with:
           platform: android-apk
+      - name: Install image tools
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
       - name: Prepare HLP2VPN branding
         run: |
           set -euo pipefail
