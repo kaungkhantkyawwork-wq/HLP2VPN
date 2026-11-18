@@ -483,9 +483,11 @@ class _ConnectionButton extends HookWidget {
                           splashColor: Colors.black.withValues(alpha: .08),
                           child: Padding(
                              padding: const EdgeInsets.all(36),
-                             child: useImage
-                                 ? image.image()
-                                 : Image.asset('assets/images/source/logo.png', fit: BoxFit.contain),
+                             child: Icon(
+                               Icons.power_settings_new_rounded,
+                               size: 70,
+                               color: buttonColor,
+                             ),
                            ),
                         ),
                       ),
