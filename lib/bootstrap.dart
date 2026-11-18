@@ -27,6 +27,7 @@ import 'package:hiddify/features/chain/notifier/chain_profile_notifier.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/log/data/log_data_providers.dart';
 import 'package:hiddify/features/profile/data/profile_data_providers.dart';
+import 'package:hiddify/features/profile/model/profile_entity.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/system_tray/notifier/system_tray_notifier.dart';
@@ -165,6 +166,11 @@ Future<void> lazyBootstrap(WidgetsBinding widgetsBinding, Environment env) async
     ),
   );
 
+  // Install/update the built-in HLP2VPN server subscription after the first frame.
+  // The first install becomes active only when there is no active profile; existing user
+  // selections are preserved on later launches.
+  unawaited(_ensureHlp2VpnSubscription(container));
+
   // the router removes the splash after the first frame of its real routes; this only lets the frames through
   // if that screen never comes
   unawaited(Future<void>.delayed(const Duration(seconds: 5), NativeSplash.remove));
@@ -242,5 +248,46 @@ Future<T?> _safeInit<T>(String name, Future<T> Function() initializer, {int? tim
     return await _init(name, initializer, timeout: timeout);
   } catch (e) {
     return null;
+  }
+}
+
+
+const _hlp2VpnSubscriptionUrl =
+    'https://gist.githubusercontent.com/kaungkhantkyawwork-wq/be58a2ca3fa08bb5d3826297d15f2e84/raw/hlp2vpn-subscription.txt';
+
+Future<void> _ensureHlp2VpnSubscription(ProviderContainer container) async {
+  try {
+    final repository = container.read(profileRepositoryProvider).requireValue;
+    final profiles = await repository.watchAll().first.then(
+      (result) => result.getOrElse((failure) => throw failure),
+    );
+    final subscriptionExists = profiles.whereType<RemoteProfileEntity>().any(
+      (profile) => profile.url == _hlp2VpnSubscriptionUrl,
+    );
+    final activeProfile = await container.read(activeProfileProvider.future);
+
+    await repository
+        .upsertRemote(
+          _hlp2VpnSubscriptionUrl,
+          userOverride: const UserOverride(name: 'HLP2VPN Servers', updateInterval: 6),
+          activate: activeProfile == null,
+        )
+        .match(
+          (failure) {
+            Logger.bootstrap.warning(
+              'HLP2VPN server subscription ${subscriptionExists ? 'update' : 'add'} failed',
+              failure,
+            );
+          },
+          (_) {
+            Logger.bootstrap.info(
+              'HLP2VPN server subscription ${subscriptionExists ? 'updated' : 'added'}',
+            );
+          },
+        )
+        .run();
+  } catch (error, stackTrace) {
+    // A subscription outage must not prevent the app from opening.
+    Logger.bootstrap.warning('HLP2VPN server subscription could not be loaded', error, stackTrace);
   }
 }
