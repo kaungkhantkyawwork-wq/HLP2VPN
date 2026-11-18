@@ -133,7 +133,6 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                       if (region != null) await _setRegion(ref, region);
                     },
                   ),
-                  const EnableAnalyticsPrefTile(),
                   const Gap(24),
                   Focus(
                     focusNode: focusNodes[IntroConst.termsAndConditionsKey],
