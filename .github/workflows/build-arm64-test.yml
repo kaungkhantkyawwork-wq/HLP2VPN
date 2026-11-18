@@ -42,7 +42,7 @@ jobs:
           ICON_OUT=/tmp/hlp2vpn_app_icon_fullframe.png
           # Android launchers crop adaptive icons to circles/squircles.
           # Keep the complete supplied neon frame inside a centered safe area.
-          convert "$SOURCE_ICON" -resize 60%x60% -background '#020817' -gravity center -extent 512x512 "$ICON_OUT"
+          convert "$SOURCE_ICON" -resize 46%x46% -background '#020817' -gravity center -extent 512x512 "$ICON_OUT"
           mkdir -p android/app/src/main/res/drawable-nodpi
           rm -f android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.webp
           cp "$ICON_OUT" android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.png
