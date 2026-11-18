@@ -126,29 +126,14 @@ class HomePage extends HookConsumerWidget {
           RepaintBoundary(
             child: DecoratedBox(
               decoration: BoxDecoration(
-                // Deep navy base with a restrained electric-blue atmosphere for the HLP2VPN home.
+                // Deep navy atmosphere with a soft electric-blue glow around the connect button.
                 gradient: theme.brightness == Brightness.dark
-                    ? const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [Color(0xFF020B1C), Color(0xFF061A35), Color(0xFF020A19)],
-                      )
-                    : null,
-                // A sky behind the connect button, as at an eclipse: in dark mode a touch lighter round
-                // the button, fading to the theme's own dark; in light mode brightest there, a touch
-                // darker towards the edges. Both barely there, centred on where the button sits.
-                gradient: theme.brightness == Brightness.dark
-                    ? RadialGradient(
-                        center: const Alignment(0, -.15),
-                        radius: .85,
-                        colors: [
-                          Colors.white.withValues(alpha: .045),
-                          Colors.white.withValues(alpha: .015),
-                          Colors.white.withValues(alpha: 0),
-                        ],
-                        stops: const [0, .45, 1],
-                      )
-                    : RadialGradient(
+                    ? const RadialGradient(
+                        center: Alignment(0, -.15),
+                        radius: .95,
+                        colors: [Color(0xFF0B2445), Color(0xFF061A35), Color(0xFF020A19)],
+                        stops: [0, .48, 1],
+                      )                    : RadialGradient(
                         center: const Alignment(0, -.15),
                         radius: 1.1,
                         colors: [
