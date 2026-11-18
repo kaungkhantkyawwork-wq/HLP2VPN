@@ -25,11 +25,13 @@ class IntroPage extends HookConsumerWidget with PresLogger {
 
   /// The user picked the region on this screen: neither the time zone nor the language changes it after that.
   static bool _regionChosenByUser = false;
+  static bool _localeChosenByUser = false;
 
   @visibleForTesting
   static void resetForTest() {
     locationInfoLoaded = false;
     _regionChosenByUser = false;
+    _localeChosenByUser = false;
   }
 
   /// The region a language points to, or null for a language spoken in no listed region.
@@ -121,6 +123,7 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                     options: const [AppLocale.en, AppLocale.my],
                     // the language sets the region, even one guessed from the time zone, until the user picks one
                     onChanged: (locale) async {
+                      _localeChosenByUser = true;
                       if (_regionChosenByUser) return;
                       final region = regionForLocale(locale, ref.read(ConfigOptions.region));
                       if (region != null) await _setRegion(ref, region);
@@ -230,7 +233,9 @@ class IntroPage extends HookConsumerWidget with PresLogger {
       loggy.debug('Timezone Region: ${regionLocale.region} Locale: ${regionLocale.locale}');
       if (_regionChosenByUser) return;
       await _setRegion(ref, regionLocale.region);
-      await ref.read(localePreferencesProvider.notifier).changeLocale(regionLocale.locale);
+      if (!_localeChosenByUser) {
+        await ref.read(localePreferencesProvider.notifier).changeLocale(regionLocale.locale);
+      }
       return;
     } catch (e) {
       loggy.warning('Could not get the local country code based on timezone', e);
