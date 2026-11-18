@@ -204,14 +204,13 @@ flutter_gen:
 # Android: LaunchTheme and NormalTheme show res/drawable/splash_window.xml (the logo on
 # @color/splash_background) until Flutter's first frame; keep it there when regenerating.
 flutter_native_splash:
+  # Keep only a plain native launch background. The branded splash is rendered
+  # by Flutter in NativeSplash._Splash to fill the entire screen.
   color: "#FBF8FF"
   color_dark: "#121318"
-  image: assets/images/source/hlp2vpn_app_icon.png
-  android_gravity: center
   android_12:
     color: "#FBF8FF"
     color_dark: "#121318"
-    image: assets/images/source/hlp2vpn_app_icon.png
 
 ffigen:
   name: "HiddifyCoreNativeLibrary"
