@@ -29,48 +29,7 @@ class HomePage extends HookConsumerWidget {
     final activeProfile = ref.watch(activeProfileProvider);
 
     return Scaffold(
-      drawer: Drawer(
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
-                child: Row(
-                  children: [
-                    Image.asset(
-                      'assets/images/source/logo.png',
-                      width: 42,
-                      height: 42,
-                      fit: BoxFit.contain,
-                    ),
-                    const Gap(12),
-                    const Text(
-                      "HLP2VPN",
-                      style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, letterSpacing: 1.1),
-                    ),
-                  ],
-                ),
-              ),
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(Icons.home_rounded),
-                title: Text(t.pages.home.title),
-                selected: true,
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        ),
-      ),
       appBar: AppBar(
-        leading: Builder(
-          builder: (context) => IconButton(
-            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-            icon: const Icon(Icons.menu_rounded),
-            onPressed: () => Scaffold.of(context).openDrawer(),
-          ),
-        ),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         surfaceTintColor: Colors.transparent,
