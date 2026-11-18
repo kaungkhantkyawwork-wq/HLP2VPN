@@ -3,9 +3,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hiddify/utils/platform_utils.dart';
 
-const _light = Color(0xFFFBF8FF);
-const _dark = Color(0xFF121318);
-
 /// The native splash, the Hiddify logo on the app's background, from the tap until the app shows its first
 /// screen. Removed once: removing it twice fails an assertion.
 ///
@@ -46,11 +43,17 @@ class _Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
-      child: Image.asset(
-        'assets/images/source/hlp2vpn_splash.png',
-        fit: BoxFit.cover,
-        alignment: Alignment.center,
+    return const ColoredBox(
+      color: Color(0xFF020B1C),
+      child: Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 32),
+          child: Image(
+            image: AssetImage('assets/images/source/hlp2vpn_full_logo.png'),
+            fit: BoxFit.contain,
+            width: 340,
+          ),
+        ),
       ),
     );
   }
