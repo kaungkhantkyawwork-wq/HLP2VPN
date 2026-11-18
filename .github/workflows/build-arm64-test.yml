@@ -40,6 +40,7 @@ jobs:
           ICON=assets/images/source/hlp2vpn_app_icon.png
           test -s "$ICON"
           mkdir -p android/app/src/main/res/drawable-nodpi
+          rm -f android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.webp
           cp "$ICON" android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.png
           cp "$ICON" android/app/src/main/ic_launcher-playstore.png
           for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
