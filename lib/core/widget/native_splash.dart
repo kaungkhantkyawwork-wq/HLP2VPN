@@ -32,9 +32,14 @@ abstract final class NativeSplash {
   static void remove() {
     if (kIsWeb || _removed) return;
     _removed = true;
-    _showing.value = false;
-    if (_drawn) return;
-    FlutterNativeSplash.remove();
+
+    // Keep the branded Flutter splash visible long enough to be perceived.
+    // Android's native launch splash is only a hand-off; this overlay bridges
+    // bootstrap and the first real route (including the first-run intro page).
+    Future<void>.delayed(const Duration(milliseconds: 2200), () {
+      _showing.value = false;
+      if (!_drawn) FlutterNativeSplash.remove();
+    });
   }
 }
 
