@@ -126,6 +126,14 @@ class HomePage extends HookConsumerWidget {
           RepaintBoundary(
             child: DecoratedBox(
               decoration: BoxDecoration(
+                // Deep navy base with a restrained electric-blue atmosphere for the HLP2VPN home.
+                gradient: theme.brightness == Brightness.dark
+                    ? const LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0xFF020B1C), Color(0xFF061A35), Color(0xFF020A19)],
+                      )
+                    : null,
                 // A sky behind the connect button, as at an eclipse: in dark mode a touch lighter round
                 // the button, fading to the theme's own dark; in light mode brightest there, a touch
                 // darker towards the edges. Both barely there, centred on where the button sits.
@@ -341,7 +349,13 @@ class _LiveNetworkPanel extends HookConsumerWidget {
           borderRadius: BorderRadius.circular(22),
           border: Border.all(color: border.withValues(alpha: .72), width: 1.1),
           boxShadow: [
-            BoxShadow(color: border.withValues(alpha: theme.brightness == Brightness.dark ? .20 : .10), blurRadius: 18),
+            BoxShadow(
+            color: border.withValues(alpha: theme.brightness == Brightness.dark ? .42 : .14),
+            blurRadius: 26,
+            spreadRadius: 1,
+          ),
+          if (theme.brightness == Brightness.dark)
+            const BoxShadow(color: Color(0x3310CFFF), blurRadius: 10, spreadRadius: -2),
           ],
         ),
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
@@ -404,7 +418,19 @@ class _NetworkMetric extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, color: color, size: 22),
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: .13),
+            border: Border.all(color: color.withValues(alpha: .72), width: 1),
+            boxShadow: [
+              BoxShadow(color: color.withValues(alpha: .38), blurRadius: 16, spreadRadius: 1),
+            ],
+          ),
+          child: Icon(icon, color: color, size: 23),
+        ),
         const Gap(5),
         Text(label, maxLines: 1, style: theme.textTheme.labelMedium),
         const Gap(3),
