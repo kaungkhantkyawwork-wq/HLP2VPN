@@ -110,8 +110,8 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                           : constraints.maxWidth;
                       return Image.asset(
                         'assets/images/source/hlp2vpn_full_logo.png',
-                        width: width,
-                        height: width * 0.34,
+                        width: width.toDouble(),
+                        height: (width * 0.34).toDouble(),
                         fit: BoxFit.contain,
                       );
                     },
