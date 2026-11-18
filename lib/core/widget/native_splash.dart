@@ -49,7 +49,7 @@ class _Splash extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 32),
           child: Image(
-            image: AssetImage('assets/images/source/hlp2vpn_full_logo.png'),
+            image: AssetImage('assets/images/source/hlp2vpn_splash.png'),
             fit: BoxFit.contain,
             width: 340,
           ),
