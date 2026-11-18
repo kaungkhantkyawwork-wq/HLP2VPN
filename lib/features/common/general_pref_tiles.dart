@@ -52,8 +52,7 @@ class LocalePrefTile extends ConsumerWidget {
 /// English first, Persian second, then the rest as declared.
 final _localeOrder = [
   AppLocale.en,
-  AppLocale.fa,
-  ...AppLocale.values.where((e) => e != AppLocale.en && e != AppLocale.fa),
+  AppLocale.my,
 ];
 
 /// The language's flag (Persian's with the lion and sun); none for a language without one.
