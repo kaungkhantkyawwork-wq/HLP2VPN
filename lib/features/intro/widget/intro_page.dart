@@ -257,7 +257,9 @@ class IntroPage extends HookConsumerWidget with PresLogger {
         // the answer can come seconds later, after the user picked a region
         if (_regionChosenByUser) return;
         await _setRegion(ref, regionLocale.region);
-        await ref.read(localePreferencesProvider.notifier).changeLocale(regionLocale.locale);
+        if (!_localeChosenByUser) {
+          await ref.read(localePreferencesProvider.notifier).changeLocale(regionLocale.locale);
+        }
       } else {
         loggy.warning('Request failed with status: ${response.statusCode}');
       }
