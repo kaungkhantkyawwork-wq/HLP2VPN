@@ -48,7 +48,7 @@ jobs:
           cp "$ICON_OUT" android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.png
           cp "$ICON_OUT" android/app/src/main/ic_launcher-playstore.png
           # Android 12 uses a separate native splash drawable; use the full landscape brand logo, not the launcher icon.
-          cp assets/images/source/hlp2vpn_full_logo.png android/app/src/main/res/drawable-nodpi/hlp2vpn_splash_logo.png
+          cp assets/images/source/hlp2vpn_splash.png android/app/src/main/res/drawable-nodpi/hlp2vpn_splash_logo.png
           for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
             density="${spec%%:*}"
             size="${spec##*:}"
