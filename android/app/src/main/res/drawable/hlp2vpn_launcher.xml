@@ -1,3 +1,3 @@
 <bitmap xmlns:android="http://schemas.android.com/apk/res/android"
-    android:src="@drawable/hlp2vpn_app_icon.png"
+    android:src="@drawable/hlp2vpn_app_icon"
     android:gravity="center" />
