@@ -32,6 +32,21 @@ jobs:
       - uses: ./.github/actions/setup-flutter
         with:
           platform: android-apk
+      - name: Prepare HLP2VPN branding
+        run: |
+          set -euo pipefail
+          ICON=assets/images/source/hlp2vpn_app_icon.png
+          test -s "$ICON"
+          mkdir -p android/app/src/main/res/drawable-nodpi
+          cp "$ICON" android/app/src/main/res/drawable-nodpi/hlp2vpn_app_icon.png
+          cp "$ICON" android/app/src/main/ic_launcher-playstore.png
+          for spec in mdpi:48 hdpi:72 xhdpi:96 xxhdpi:144 xxxhdpi:192; do
+            density="\${spec%%:*}"
+            size="\${spec##*:}"
+            mkdir -p "android/app/src/main/res/mipmap-\${density}"
+            convert "$ICON" -resize "\${size}x\${size}" "android/app/src/main/res/mipmap-\${density}/ic_launcher.png"
+            convert "$ICON" -resize "\${size}x\${size}" "android/app/src/main/res/mipmap-\${density}/ic_launcher_round.png"
+          done
       - name: Build ARM64 release APK
         run: flutter build apk --release --target-platform android-arm64 --dart-define=commit=${GITHUB_SHA}
       - name: Collect exactly one APK
