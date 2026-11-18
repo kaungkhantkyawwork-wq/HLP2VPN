@@ -93,7 +93,25 @@ class IntroPage extends HookConsumerWidget with PresLogger {
       return null;
     }, []);
 
-    return Scaffold(
+    const introGold = Color(0xFFFFC857);
+    final introTheme = theme.copyWith(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: Colors.black,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: introGold,
+        brightness: Brightness.dark,
+        surface: const Color(0xFF090909),
+      ),
+      textTheme: theme.textTheme.apply(
+        bodyColor: Colors.white,
+        displayColor: Colors.white,
+      ),
+    );
+
+    return Theme(
+      data: introTheme,
+      child: Scaffold(
+      backgroundColor: Colors.black,
       body: Center(
         child: ScrollConfiguration(
           behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
@@ -208,6 +226,8 @@ class IntroPage extends HookConsumerWidget with PresLogger {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: introGold,
+        foregroundColor: Colors.black,
         icon: isStarting.value
             ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator())
             : const Icon(Icons.rocket_launch),
@@ -225,6 +245,7 @@ class IntroPage extends HookConsumerWidget with PresLogger {
           }
           await ref.read(Preferences.introCompleted.notifier).update(true);
         },
+      ),
       ),
     );
   }
