@@ -34,9 +34,11 @@ class HomePage extends HookConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(20, 28, 20, 24),
                 child: Row(
                   children: [
-                    Assets.images.logo.svg(
-                      height: 38,
-                      colorFilter: const ColorFilter.mode(Color(0xFF75E5FF), BlendMode.srcIn),
+                    Image.asset(
+                      'assets/images/source/logo.png',
+                      width: 42,
+                      height: 42,
+                      fit: BoxFit.contain,
                     ),
                     const Gap(12),
                     const Text(
