@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hiddify/utils/platform_utils.dart';
 
@@ -38,21 +38,67 @@ abstract final class NativeSplash {
   }
 }
 
-class _Splash extends StatelessWidget {
+class _Splash extends StatefulWidget {
   const _Splash();
 
   @override
+  State<_Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
+  late final AnimationController _loader = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1100),
+  )..repeat();
+
+  @override
+  void dispose() {
+    _loader.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
-      color: Color(0xFF020B1C),
-      child: Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 32),
-          child: Image(
-            image: AssetImage('assets/images/source/hlp2vpn_splash.png'),
-            fit: BoxFit.contain,
-            width: 340,
-          ),
+    return ColoredBox(
+      color: const Color(0xFF020817),
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final imageHeight = constraints.maxHeight * .78;
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                Positioned.fill(
+                  child: Image.asset(
+                    'assets/images/source/hlp2vpn_splash.png',
+                    fit: BoxFit.contain,
+                    alignment: Alignment.center,
+                  ),
+                ),
+                Positioned(
+                  bottom: constraints.maxHeight * .075,
+                  child: SizedBox(
+                    width: 42,
+                    height: 42,
+                    child: AnimatedBuilder(
+                      animation: _loader,
+                      builder: (context, child) => Transform.rotate(
+                        angle: _loader.value * 6.283185307179586,
+                        child: child,
+                      ),
+                      child: const CircularProgressIndicator(
+                        value: .72,
+                        strokeWidth: 3,
+                        strokeCap: StrokeCap.round,
+                        color: Color(0xFF08D9FF),
+                        backgroundColor: Color(0x332D8CFF),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
