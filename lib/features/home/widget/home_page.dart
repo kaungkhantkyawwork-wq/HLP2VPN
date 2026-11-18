@@ -10,6 +10,11 @@ import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/profile/widget/profile_tile.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_card.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
+import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
+import 'package:hiddify/features/connection/model/connection_status.dart';
+import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
+import 'package:hiddify/features/stats/notifier/stats_notifier.dart';
+import 'package:hiddify/features/proxy/widget/upload_speed.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -197,7 +202,13 @@ class HomePage extends HookConsumerWidget {
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [ConnectionButton(), ActiveProxyDelayIndicator()],
+                                      children: [
+                                        const Gap(10),
+                                        const ConnectionButton(),
+                                        const Gap(18),
+                                        const _LiveNetworkPanel(),
+                                        const Gap(12),
+                                      ],
                                     ),
                                   ),
                                   ActiveProxyFooter(),
@@ -291,6 +302,125 @@ class AppVersionLabel extends HookConsumerWidget {
           style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSecondaryContainer),
         ),
       ),
+    );
+  }
+}
+
+
+/// Live tunnel traffic from the core; never shows sample or hard-coded speeds.
+class _LiveNetworkPanel extends HookConsumerWidget {
+  const _LiveNetworkPanel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final stats = ref.watch(statsNotifierProvider).valueOrNull;
+    final connected = ref.watch(
+      connectionNotifierProvider.select((s) => s.valueOrNull is Connected),
+    );
+    final proxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
+    final down = connected ? (stats?.downlink.toInt() ?? 0) : 0;
+    final up = connected ? (stats?.uplink.toInt() ?? 0) : 0;
+    final ping = connected && (proxy?.urlTestDelay ?? 0) > 0 ? proxy!.urlTestDelay.toString() : '--';
+    final border = theme.brightness == Brightness.dark
+        ? const Color(0xFF168DFF)
+        : const Color(0xFF62B8F5);
+    final surface = theme.brightness == Brightness.dark
+        ? const Color(0xFF071B36)
+        : theme.colorScheme.surface;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 18),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              surface,
+              Color.lerp(surface, const Color(0xFF087BCE), theme.brightness == Brightness.dark ? .22 : .06)!,
+            ],
+          ),
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: border.withValues(alpha: .72), width: 1.1),
+          boxShadow: [
+            BoxShadow(color: border.withValues(alpha: theme.brightness == Brightness.dark ? .20 : .10), blurRadius: 18),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+        child: Row(
+          children: [
+            Expanded(
+              child: _NetworkMetric(
+                icon: Icons.south_rounded,
+                color: const Color(0xFF19D9FF),
+                label: 'Download',
+                value: connected ? formatMbps(down) : '0',
+                unit: 'Mbps',
+              ),
+            ),
+            Container(width: 1, height: 48, color: border.withValues(alpha: .35)),
+            Expanded(
+              child: _NetworkMetric(
+                icon: Icons.north_rounded,
+                color: const Color(0xFFE879F9),
+                label: 'Upload',
+                value: connected ? formatMbps(up) : '0',
+                unit: 'Mbps',
+              ),
+            ),
+            Container(width: 1, height: 48, color: border.withValues(alpha: .35)),
+            Expanded(
+              child: _NetworkMetric(
+                icon: Icons.bolt_rounded,
+                color: const Color(0xFFFFC247),
+                label: 'Ping',
+                value: ping,
+                unit: ping == '--' ? '' : 'ms',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _NetworkMetric extends StatelessWidget {
+  const _NetworkMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: color, size: 22),
+        const Gap(5),
+        Text(label, maxLines: 1, style: theme.textTheme.labelMedium),
+        const Gap(3),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800)),
+                if (unit.isNotEmpty)
+                  TextSpan(text: ' $unit', style: theme.textTheme.labelSmall),
+              ],
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
