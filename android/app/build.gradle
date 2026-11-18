@@ -26,7 +26,7 @@ android {
  kotlinOptions { jvmTarget = '17' }
  sourceSets { main.java.srcDirs += 'src/main/kotlin' }
  defaultConfig {
-  applicationId "app.hiddify.com"
+  applicationId "com.hlp2.vpn"
   minSdkVersion flutter.minSdkVersion
   targetSdkVersion 36
   versionCode flutterVersionCode.toInteger()
