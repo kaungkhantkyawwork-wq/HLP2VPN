@@ -11,10 +11,13 @@ import 'package:hiddify/features/proxy/active/ip_widget.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class LocalePrefTile extends ConsumerWidget {
-  const LocalePrefTile({super.key, this.onChanged});
+  const LocalePrefTile({super.key, this.onChanged, this.options});
 
   /// Called after the user picks a language (not on reset).
   final ValueChanged<AppLocale>? onChanged;
+
+  /// Optional language list for screens that need a smaller set of choices.
+  final List<AppLocale>? options;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +36,7 @@ class LocalePrefTile extends ConsumerWidget {
               title: t.pages.settings.general.locale,
               selected: locale,
               onReset: () => ref.read(localePreferencesProvider.notifier).changeLocale(AppLocale.en),
-              options: _localeOrder,
+              options: options ?? _localeOrder,
               getTitle: (e) => e.localeName,
               getSecondary: _localeFlag,
             );
