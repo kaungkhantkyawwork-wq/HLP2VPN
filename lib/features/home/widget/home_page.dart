@@ -26,26 +26,55 @@ class HomePage extends HookConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // leading: (RootScaffold.stateKey.currentState?.hasDrawer ?? false) && showDrawerButton(context)
-        //     ? DrawerButton(
-        //         onPressed: () {
-        //           RootScaffold.stateKey.currentState?.openDrawer();
-        //         },
-        //       )
-        //     : null,
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
         title: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Assets.images.logo.svg(height: 24),
-            const Gap(8),
-            Text.rich(
-              TextSpan(
-                children: [
-                  TextSpan(text: t.common.appTitle),
-                  const TextSpan(text: " "),
-                  const WidgetSpan(child: AppVersionLabel(), alignment: PlaceholderAlignment.middle),
+            Container(
+              padding: const EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: const Color(0xFF19C8FF).withValues(alpha: .42), blurRadius: 18, spreadRadius: 1),
+                  BoxShadow(color: const Color(0xFF386BFF).withValues(alpha: .24), blurRadius: 28, spreadRadius: 2),
                 ],
               ),
+              child: Assets.images.logo.svg(
+                height: 30,
+                colorFilter: const ColorFilter.mode(Color(0xFF75E5FF), BlendMode.srcIn),
+              ),
             ),
+            const Gap(10),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShaderMask(
+                  blendMode: BlendMode.srcIn,
+                  shaderCallback: (bounds) => const LinearGradient(
+                    colors: [Color(0xFFB8F4FF), Color(0xFF36CFFF), Color(0xFF6688FF)],
+                  ).createShader(bounds),
+                  child: const Text(
+                    "HLP2VPN",
+                    style: TextStyle(fontSize: 19, fontWeight: FontWeight.w800, letterSpacing: 1.25, height: 1.05),
+                  ),
+                ),
+                Text(
+                  "SECURE CONNECTION",
+                  style: TextStyle(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 2.1,
+                    color: theme.colorScheme.onSurface.withValues(alpha: .62),
+                  ),
+                ),
+              ],
+            ),
+            const Gap(7),
+            const AppVersionLabel(),
           ],
         ),
         actions: [
