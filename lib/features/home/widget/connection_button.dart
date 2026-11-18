@@ -265,10 +265,10 @@ class _ConnectionButton extends HookWidget {
   /// The other looks keep their motion.
   final bool reduceFlow;
 
-  static const _size = 148.0;
+  static const _size = 220.0;
 
   /// Room round the button for its light.
-  static const _glow = 110.0;
+  static const _glow = 116.0;
 
   /// The button and its light take most of a short screen (a TV, a phone held sideways, a small
   /// window): full size from [_fullFrom] logical pixels of height, shrinking evenly to
@@ -482,10 +482,10 @@ class _ConnectionButton extends HookWidget {
                           highlightColor: Colors.black.withValues(alpha: .06),
                           splashColor: Colors.black.withValues(alpha: .08),
                           child: Padding(
-                             padding: const EdgeInsets.all(36),
+                             padding: const EdgeInsets.all(54),
                              child: Icon(
                                Icons.power_settings_new_rounded,
-                               size: 70,
+                               size: 86,
                                color: buttonColor,
                              ),
                            ),
