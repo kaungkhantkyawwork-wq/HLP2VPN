@@ -565,7 +565,16 @@ class _ConnectionButton extends HookWidget {
         Gap(24 * scale),
         Column(
           children: [
-            AnimatedText(label, style: theme.textTheme.titleMedium),
+            AnimatedText(
+              label,
+              style: theme.textTheme.titleMedium?.copyWith(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+                shadows: [
+                  Shadow(color: buttonColor.withValues(alpha: .55), blurRadius: 12),
+                ],
+              ),
+            ),
             AnimatedSwitcher(
               layoutBuilder: uniqueKeysLayout(),
               duration: const Duration(milliseconds: 250),
