@@ -151,22 +151,22 @@ class _PremiumHomeBackdrop extends StatelessWidget {
       gradient: RadialGradient(
         center: Alignment(0, -.35),
         radius: 1.2,
-        colors: [Color(0xFF0B2C58), Color(0xFF061A35), Color(0xFF020817)],
+        colors: [Color(0xFF104A83), Color(0xFF06284D), Color(0xFF010817)],
         stops: [0, .48, 1],
       ),
     ),
     child: Stack(
       children: [
         Positioned(
-          top: 115,
+          top: 145,
           left: -100,
           right: -100,
           child: Container(
-            height: 230,
+            height: 250,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x3310BFFF), width: 2),
-              boxShadow: const [BoxShadow(color: Color(0x3310AFFF), blurRadius: 55, spreadRadius: 2)],
+              border: Border.all(color: const Color(0x6610CFFF), width: 2),
+              boxShadow: const [BoxShadow(color: Color(0x5510AFFF), blurRadius: 75, spreadRadius: 5)],
             ),
           ),
         ),
@@ -178,7 +178,8 @@ class _PremiumHomeBackdrop extends StatelessWidget {
             height: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x2210BFFF), width: 2),
+              border: Border.all(color: const Color(0x4410BFFF), width: 2),
+              boxShadow: const [BoxShadow(color: Color(0x2210AFFF), blurRadius: 50, spreadRadius: 2)],
             ),
           ),
         ),
@@ -359,7 +360,7 @@ class _LiveNetworkPanel extends HookConsumerWidget {
             Expanded(
               child: _NetworkMetric(
                 icon: Icons.south_rounded,
-                color: const Color(0xFF19D9FF),
+                color: const Color(0xFF18E8FF),
                 label: 'Download',
                 value: connected ? formatMbps(down) : '0',
                 unit: 'Mbps',
@@ -369,7 +370,7 @@ class _LiveNetworkPanel extends HookConsumerWidget {
             Expanded(
               child: _NetworkMetric(
                 icon: Icons.north_rounded,
-                color: const Color(0xFFE879F9),
+                color: const Color(0xFFFF4DFF),
                 label: 'Upload',
                 value: connected ? formatMbps(up) : '0',
                 unit: 'Mbps',
@@ -379,7 +380,7 @@ class _LiveNetworkPanel extends HookConsumerWidget {
             Expanded(
               child: _NetworkMetric(
                 icon: Icons.bolt_rounded,
-                color: const Color(0xFFFFC247),
+                color: const Color(0xFFFFC21A),
                 label: 'Ping',
                 value: ping,
                 unit: ping == '--' ? '' : 'ms',
@@ -541,14 +542,14 @@ class _NetworkMetric extends StatelessWidget {
           child: Icon(icon, color: color, size: 23),
         ),
         const Gap(5),
-        Text(label, maxLines: 1, style: theme.textTheme.labelMedium),
+        Text(label, maxLines: 1, style: theme.textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: .3)),
         const Gap(3),
         FittedBox(
           fit: BoxFit.scaleDown,
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w800)),
+                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w900, shadows: [Shadow(color: color.withValues(alpha: .55), blurRadius: 10)])),
                 if (unit.isNotEmpty)
                   TextSpan(text: ' $unit', style: theme.textTheme.labelSmall?.copyWith(color: Colors.white70)),
               ],
