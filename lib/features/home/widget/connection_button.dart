@@ -486,7 +486,31 @@ class _ConnectionButton extends HookWidget {
                              child: Icon(
                                Icons.power_settings_new_rounded,
                                size: 86,
-                               color: buttonColor,
+                               color: look == _Look.connected
+                                   ? const Color(0xFF45FF72)
+                                   : look == _Look.connecting || look == _Look.waiting
+                                       ? const Color(0xFFFFC928)
+                                       : const Color(0xFF18DFFF),
+                               shadows: [
+                                 Shadow(
+                                   color: (look == _Look.connected
+                                           ? const Color(0xFF45FF72)
+                                           : look == _Look.connecting || look == _Look.waiting
+                                               ? const Color(0xFFFFC928)
+                                               : const Color(0xFF18DFFF))
+                                       .withValues(alpha: .85),
+                                   blurRadius: 24,
+                                 ),
+                                 Shadow(
+                                   color: (look == _Look.connected
+                                           ? const Color(0xFF45FF72)
+                                           : look == _Look.connecting || look == _Look.waiting
+                                               ? const Color(0xFFFFC928)
+                                               : const Color(0xFF18DFFF))
+                                       .withValues(alpha: .45),
+                                   blurRadius: 42,
+                                 ),
+                               ],
                              ),
                            ),
                         ),
