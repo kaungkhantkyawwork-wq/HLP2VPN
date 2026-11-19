@@ -610,3 +610,6 @@ String _serverFlag(String name) {
   if (match == null) return '';
   final code = match.group(1)!.toUpperCase();
   if (!RegExp(r'^[A-Z]{2}$'
+).hasMatch(code)) return '';
+  return String.fromCharCodes(code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41));
+}
