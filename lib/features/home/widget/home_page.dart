@@ -10,7 +10,6 @@ import 'package:hiddify/features/home/widget/connection_button.dart';
 import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/profile/widget/profile_tile.dart';
-import 'package:hiddify/features/proxy/active/active_proxy_card.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/connection/model/connection_status.dart';
@@ -133,8 +132,7 @@ class HomePage extends HookConsumerWidget {
                             const _LiveNetworkPanel(),
                             const Gap(12),
                             const _DataServerPanel(),
-                            const Gap(14),
-                            const ActiveProxyFooter(),
+
                           ]),
                         ),
                       ),
