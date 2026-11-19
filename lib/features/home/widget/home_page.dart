@@ -40,8 +40,12 @@ class HomePage extends HookConsumerWidget {
       cardTheme: theme.cardTheme.copyWith(
         color: const Color(0xFF061A34),
         surfaceTintColor: Colors.transparent,
-        shadowColor: const Color(0x66008CFF),
+        shadowColor: const Color(0xAA008CFF),
         elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(22),
+          side: const BorderSide(color: Color(0xFF168DFF), width: 1.2),
+        ),
       ),
       colorScheme: theme.colorScheme.copyWith(
         brightness: Brightness.dark,
