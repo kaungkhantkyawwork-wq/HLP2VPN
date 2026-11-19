@@ -62,8 +62,8 @@ class HomePage extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                width: 210,
-                height: 54,
+                width: 250,
+                height: 62,
                 child: Image.asset(
                   'assets/images/source/hlp2vpn_header_logo.png',
                   fit: BoxFit.contain,
@@ -120,7 +120,7 @@ class HomePage extends HookConsumerWidget {
                             const Gap(22),
                             const _LiveNetworkPanel(),
                             const Gap(12),
-                            const _DataIpPanel(),
+                            const _DataServerPanel(),
                             const Gap(14),
                             const ActiveProxyFooter(),
                           ]),
@@ -393,20 +393,25 @@ class _LiveNetworkPanel extends HookConsumerWidget {
 }
 
 
-/// Live transfer total and exit IP. Values come from the VPN core/IP lookup, never demo data.
-class _DataIpPanel extends HookConsumerWidget {
-  const _DataIpPanel();
+/// Live transfer total and the selected/connected server name.
+class _DataServerPanel extends HookConsumerWidget {
+  const _DataServerPanel();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(statsNotifierProvider).valueOrNull;
-    final connected = ref.watch(
-      connectionNotifierProvider.select((s) => s.valueOrNull is Connected),
-    );
-    final ipState = ref.watch(ipInfoNotifierProvider);
-    final ip = connected ? (ipState.valueOrNull?.ip ?? (ipState.isLoading ? 'Checking…' : '--')) : '--';
+    final profile = ref.watch(activeProfileProvider).valueOrNull;
+    final status = ref.watch(connectionNotifierProvider).valueOrNull;
+    final connected = status is Connected;
+    final connecting = status is Connecting || status is Waiting || status is HotReloading;
     final total = connected ? (((stats?.downlinkTotal as num?) ?? 0).toInt()).size() : '0 B';
-    const border = Color(0xFF168DFF);
+    final serverName = profile?.name ?? '--';
+    final serverLabel = connected
+        ? 'Connected Server'
+        : connecting
+            ? 'Connecting to'
+            : 'Selected Server';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Container(
@@ -418,7 +423,7 @@ class _DataIpPanel extends HookConsumerWidget {
             colors: [Color(0xFF08264B), Color(0xFF04152D)],
           ),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: border, width: 1.1),
+          border: Border.all(color: const Color(0xFF168DFF), width: 1.1),
           boxShadow: const [BoxShadow(color: Color(0x44108FFF), blurRadius: 22)],
         ),
         child: Row(
@@ -431,14 +436,13 @@ class _DataIpPanel extends HookConsumerWidget {
                 value: total,
               ),
             ),
-            Container(width: 1, height: 48, color: border.withValues(alpha: .45)),
+            Container(width: 1, height: 48, color: const Color(0x73168DFF)),
             Expanded(
               child: _InfoMetric(
-                icon: Icons.language_rounded,
+                icon: Icons.dns_rounded,
                 color: const Color(0xFF19D9FF),
-                label: 'IP Address',
-                value: ip,
-                onTap: connected ? () => ref.read(ipInfoNotifierProvider.notifier).refresh() : null,
+                label: serverLabel,
+                value: serverName,
               ),
             ),
           ],
