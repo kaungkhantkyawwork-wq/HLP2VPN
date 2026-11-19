@@ -14,6 +14,7 @@ import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/profile/widget/profile_tile.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
+import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/connection/model/connection_status.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/stats/notifier/stats_notifier.dart';
@@ -503,7 +504,6 @@ class _DataServerPanel extends HookConsumerWidget {
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w800,
-                    fontFeatures: [FontFeature.tabularFigures()],
                   ),
                 ),
               ],
