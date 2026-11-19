@@ -44,7 +44,13 @@ class HomePage extends HookConsumerWidget {
       colorScheme: theme.colorScheme.copyWith(
         brightness: Brightness.dark,
         surface: _panel,
+        surfaceContainerLowest: const Color(0xFF020B1C),
+        surfaceContainerLow: const Color(0xFF061A34),
+        surfaceContainer: const Color(0xFF082344),
+        surfaceContainerHigh: const Color(0xFF0A2B50),
+        surfaceContainerHighest: const Color(0xFF0D315B),
         onSurface: Colors.white,
+        onSurfaceVariant: const Color(0xFFB8CBE0),
         primary: _cyan,
         secondary: _blue,
         outline: const Color(0xFF167BFF),
