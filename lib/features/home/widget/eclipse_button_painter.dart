@@ -132,18 +132,60 @@ class EclipseButtonPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final f = frame;
     _Ctx ctx(EclipseFrame frame) => _Ctx(this, canvas, size.center(Offset.zero), frame);
-    if (f.since >= _fade || f.previous == f.look) return _paintLook(ctx(f));
-    // the looks cross-fade, over a button that stays put; clip the layers to this
-    // painter so the offscreen buffers stay small
-    final a = _easeInOut(f.since / _fade);
-    final bounds = Offset.zero & size;
-    ctx(f).disc();
-    canvas.saveLayer(bounds, Paint()..color = Color.fromRGBO(0, 0, 0, 1 - a));
-    _paintLook(ctx(f._before));
-    canvas.restore();
-    canvas.saveLayer(bounds, Paint()..color = Color.fromRGBO(0, 0, 0, a));
-    _paintLook(ctx(f));
-    canvas.restore();
+    if (f.since >= _fade || f.previous == f.look) {
+      _paintLook(ctx(f));
+    } else {
+      // The looks cross-fade over a button that stays put.
+      final a = _easeInOut(f.since / _fade);
+      final bounds = Offset.zero & size;
+      ctx(f).disc();
+      canvas.saveLayer(bounds, Paint()..color = Color.fromRGBO(0, 0, 0, 1 - a));
+      _paintLook(ctx(f._before));
+      canvas.restore();
+      canvas.saveLayer(bounds, Paint()..color = Color.fromRGBO(0, 0, 0, a));
+      _paintLook(ctx(f));
+      canvas.restore();
+    }
+
+    // A bright, travelling light band around the outside of the connect button.
+    // Its colour follows the actual connection state.
+    final center = size.center(Offset.zero);
+    final ringRadius = radius + 8;
+    final ringRect = Rect.fromCircle(center: center, radius: ringRadius);
+    final baseColor = switch (f.look) {
+      EclipseLook.connected => const Color(0xFF35FF65),
+      EclipseLook.starting || EclipseLook.waiting || EclipseLook.stopping => const Color(0xFFFFC629),
+      EclipseLook.error => const Color(0xFFFF4568),
+      EclipseLook.idle => const Color(0xFF12DFFF),
+    };
+    final angle = 2 * math.pi * (f.time / 2.1);
+    final glowPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round
+      ..color = baseColor.withValues(alpha: .58)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 9);
+    canvas.drawArc(ringRect, angle, 1.28, false, glowPaint);
+    final corePaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3.8
+      ..strokeCap = StrokeCap.round
+      ..shader = SweepGradient(
+        startAngle: angle,
+        endAngle: angle + 1.28,
+        colors: [baseColor.withValues(alpha: .05), baseColor, Colors.white, baseColor],
+        stops: const [0, .62, .82, 1],
+        transform: GradientRotation(angle),
+      ).createShader(ringRect);
+    canvas.drawArc(ringRect, angle, 1.28, false, corePaint);
+    final flareAngle = angle + 1.28;
+    canvas.drawCircle(
+      Offset(center.dx + ringRadius * math.cos(flareAngle), center.dy + ringRadius * math.sin(flareAngle)),
+      3.2,
+      Paint()
+        ..color = Colors.white
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
   }
 
   @override
