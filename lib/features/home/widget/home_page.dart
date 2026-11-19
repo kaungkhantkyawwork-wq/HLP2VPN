@@ -404,7 +404,7 @@ class _DataIpPanel extends HookConsumerWidget {
     );
     final ipState = ref.watch(ipInfoNotifierProvider);
     final ip = connected ? (ipState.valueOrNull?.ip ?? (ipState.isLoading ? 'Checking…' : '--')) : '--';
-    final total = connected ? (stats?.downlinkTotal ?? 0).size() : '0 B';
+    final total = connected ? ((stats?.downlinkTotal as num?) ?? 0).size() : '0 B';
     const border = Color(0xFF168DFF);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
