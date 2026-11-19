@@ -65,33 +65,13 @@ class IntroPage extends HookConsumerWidget with PresLogger {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(translationsProvider).requireValue;
     final theme = Theme.of(context);
-
     final isStarting = useState(false);
+    final acceptedTerms = useState(true);
 
     if (!locationInfoLoaded) {
       autoSelectRegion(ref).then((value) => loggy.debug("Auto Region selection finished!"));
       locationInfoLoaded = true;
     }
-
-    // for focus management
-    final focusStates = <String, ValueNotifier<bool>>{
-      IntroConst.termsAndConditionsKey: useState<bool>(false),
-      IntroConst.privacyPolicyKey: useState<bool>(false),
-      IntroConst.githubKey: useState<bool>(false),
-      IntroConst.licenseKey: useState<bool>(false),
-    };
-    final focusNodes = <String, FocusNode>{
-      IntroConst.termsAndConditionsKey: useFocusNode(),
-      IntroConst.privacyPolicyKey: useFocusNode(),
-      IntroConst.githubKey: useFocusNode(),
-      IntroConst.licenseKey: useFocusNode(),
-    };
-    useEffect(() {
-      for (final entry in focusNodes.entries) {
-        entry.value.addListener(() => focusStates[entry.key]!.value = entry.value.hasPrimaryFocus);
-      }
-      return null;
-    }, []);
 
     return Scaffold(
       backgroundColor: const Color(0xFF061329),
@@ -102,28 +82,32 @@ class IntroPage extends HookConsumerWidget with PresLogger {
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 520),
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 24, 24, 18),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 16),
                   child: Column(
                     children: [
                       Expanded(
                         child: SingleChildScrollView(
                           physics: const BouncingScrollPhysics(),
                           child: ConstrainedBox(
-                            constraints: BoxConstraints(minHeight: constraints.maxHeight - 150),
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight - 120,
+                            ),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Container(
-                                  width: 116,
-                                  height: 116,
-                                  padding: const EdgeInsets.all(14),
+                                  width: 112,
+                                  height: 112,
+                                  padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF0C2342),
-                                    borderRadius: BorderRadius.circular(30),
-                                    border: Border.all(color: const Color(0xFF08D9FF).withValues(alpha: .55)),
+                                    borderRadius: BorderRadius.circular(28),
+                                    border: Border.all(
+                                      color: const Color(0xFF08D9FF).withValues(alpha: .58),
+                                    ),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: const Color(0xFF08D9FF).withValues(alpha: .12),
+                                        color: const Color(0xFF08D9FF).withValues(alpha: .13),
                                         blurRadius: 28,
                                         spreadRadius: 2,
                                       ),
@@ -134,14 +118,14 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                                     fit: BoxFit.contain,
                                   ),
                                 ),
-                                const Gap(22),
+                                const Gap(18),
                                 Image.asset(
                                   'assets/images/source/hlp2vpn_full_logo.png',
-                                  width: 260,
-                                  height: 88,
+                                  width: 244,
+                                  height: 78,
                                   fit: BoxFit.contain,
                                 ),
-                                const Gap(10),
+                                const Gap(8),
                                 Text(
                                   t.intro.banner,
                                   textAlign: TextAlign.center,
@@ -150,20 +134,28 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                                     height: 1.5,
                                   ),
                                 ),
-                                const Gap(34),
+                                const Gap(28),
                                 Container(
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
                                     color: const Color(0xFF0C2342),
                                     borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(color: const Color(0xFF1B527A)),
+                                    border: Border.all(
+                                      color: const Color(0xFF08D9FF).withValues(alpha: .48),
+                                    ),
                                   ),
                                   child: Theme(
                                     data: theme.copyWith(
                                       listTileTheme: const ListTileThemeData(
                                         iconColor: Color(0xFF08D9FF),
                                         textColor: Colors.white,
-                                        titleTextStyle: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-                                        subtitleTextStyle: TextStyle(color: Color(0xFFB8C8DA)),
+                                        titleTextStyle: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                        subtitleTextStyle: TextStyle(
+                                          color: Color(0xFFB8C8DA),
+                                        ),
                                       ),
                                     ),
                                     child: LocalePrefTile(
@@ -171,122 +163,197 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                                       onChanged: (locale) async {
                                         _localeChosenByUser = true;
                                         if (_regionChosenByUser) return;
-                                        final region = regionForLocale(locale, ref.read(ConfigOptions.region));
+                                        final region = regionForLocale(
+                                          locale,
+                                          ref.read(ConfigOptions.region),
+                                        );
                                         if (region != null) await _setRegion(ref, region);
                                       },
                                     ),
                                   ),
                                 ),
-                                const Gap(26),
-                                Focus(
-                                  focusNode: focusNodes[IntroConst.termsAndConditionsKey],
-                                  onKeyEvent: (node, event) => _handleKeyEvent(event, IntroConst.termsAndConditionsKey),
-                                  child: Text.rich(
-                                    t.intro.termsAndPolicyCaution(
-                                      tap: (text) => TextSpan(
-                                        text: text,
-                                        style: const TextStyle(
-                                          color: Color(0xFF08D9FF),
-                                          decoration: TextDecoration.underline,
+                                const Gap(20),
+                                Container(
+                                  width: double.infinity,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0C2342).withValues(alpha: .72),
+                                    borderRadius: BorderRadius.circular(16),
+                                    border: Border.all(
+                                      color: const Color(0xFF1B527A),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Checkbox(
+                                        value: acceptedTerms.value,
+                                        activeColor: const Color(0xFF08D9FF),
+                                        checkColor: const Color(0xFF041326),
+                                        side: const BorderSide(
+                                          color: Color(0xFF8DDFFF),
+                                          width: 1.5,
                                         ),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            await UriUtils.tryLaunch(Uri.parse(Constants.termsAndConditionsUrl));
-                                          },
+                                        onChanged: (value) {
+                                          acceptedTerms.value = value ?? false;
+                                        },
                                       ),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: Colors.white.withValues(alpha: .65),
-                                    ),
+                                      const Gap(6),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(top: 10),
+                                          child: Focus(
+                                            onKeyEvent: (node, event) => _handleKeyEvent(
+                                              event,
+                                              IntroConst.termsAndConditionsKey,
+                                            ),
+                                            child: Text.rich(
+                                              t.intro.termsAndPolicyCaution(
+                                                tap: (text) => TextSpan(
+                                                  text: text,
+                                                  style: const TextStyle(
+                                                    color: Color(0xFF08D9FF),
+                                                    decoration: TextDecoration.underline,
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                                  recognizer: TapGestureRecognizer()
+                                                    ..onTap = () async {
+                                                      await UriUtils.tryLaunch(
+                                                        Uri.parse(Constants.termsAndConditionsUrl),
+                                                      );
+                                                    },
+                                                ),
+                                              ),
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                color: Colors.white.withValues(alpha: .9),
+                                                height: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                const Gap(10),
-                                Focus(
-                                  focusNode: focusNodes[IntroConst.privacyPolicyKey],
-                                  onKeyEvent: (node, event) => _handleKeyEvent(event, IntroConst.privacyPolicyKey),
-                                  child: TextButton.icon(
-                                    style: TextButton.styleFrom(foregroundColor: const Color(0xFF8DDFFF)),
-                                    onPressed: () async {
-                                      await UriUtils.tryLaunch(Uri.parse(Constants.privacyPolicyUrl));
-                                    },
-                                    icon: const Icon(Icons.shield_outlined, size: 18),
-                                    label: Text(t.pages.about.privacyPolicy),
+                                const Gap(14),
+                                Wrap(
+                                  alignment: WrapAlignment.center,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  spacing: 4,
+                                  children: [
+                                    Text(
+                                      t.pages.about.privacyPolicy,
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: const Color(0xFF8DDFFF),
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                    ).onTap(() async {
+                                      await UriUtils.tryLaunch(
+                                        Uri.parse(Constants.privacyPolicyUrl),
+                                      );
+                                    }),
+                                  ],
+                                ),
+                                const Gap(18),
+                                Container(
+                                  width: double.infinity,
+                                  height: 1,
+                                  color: const Color(0xFF1B527A),
+                                ),
+                                const Gap(16),
+                                Text.rich(
+                                  t.intro.info(
+                                    tap_source: (text) => TextSpan(
+                                      text: text,
+                                      style: const TextStyle(
+                                        color: Color(0xFF08D9FF),
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () async {
+                                          await UriUtils.tryLaunch(Uri.parse(Constants.githubUrl));
+                                        },
+                                    ),
+                                    tap_license: (text) => TextSpan(
+                                      text: text,
+                                      style: const TextStyle(
+                                        color: Color(0xFF08D9FF),
+                                        decoration: TextDecoration.underline,
+                                      ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () async {
+                                          await UriUtils.tryLaunch(Uri.parse(Constants.licenseUrl));
+                                        },
+                                    ),
+                                  ),
+                                  textAlign: TextAlign.center,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.white.withValues(alpha: .58),
+                                    height: 1.6,
                                   ),
                                 ),
-                                const Gap(8),
-                                Focus(
-                                  focusNode: focusNodes[IntroConst.githubKey],
-                                  onKeyEvent: (node, event) => _handleKeyEvent(event, IntroConst.githubKey),
-                                  child: Text.rich(
-                                    t.intro.info(
-                                      tap_source: (text) => TextSpan(
-                                        text: text,
-                                        style: const TextStyle(color: Color(0xFF08D9FF)),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            await UriUtils.tryLaunch(Uri.parse(Constants.githubUrl));
-                                          },
-                                      ),
-                                      tap_license: (text) => TextSpan(
-                                        text: text,
-                                        style: const TextStyle(color: Color(0xFF08D9FF)),
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            await UriUtils.tryLaunch(Uri.parse(Constants.licenseUrl));
-                                          },
-                                      ),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: Colors.white.withValues(alpha: .55),
-                                    ),
-                                  ),
-                                ),
-                                Focus(
-                                  focusNode: focusNodes[IntroConst.licenseKey],
-                                  onKeyEvent: (node, event) => _handleKeyEvent(event, IntroConst.licenseKey),
-                                  child: const SizedBox(height: 8),
-                                ),
+                                const Gap(12),
                               ],
                             ),
                           ),
                         ),
                       ),
-                      const Gap(18),
+                      const Gap(12),
                       SizedBox(
                         width: double.infinity,
-                        height: 56,
+                        height: 58,
                         child: FilledButton.icon(
                           style: FilledButton.styleFrom(
                             backgroundColor: const Color(0xFF08D9FF),
                             foregroundColor: const Color(0xFF041326),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                            disabledBackgroundColor: const Color(0xFF17445C),
+                            disabledForegroundColor: Colors.white54,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(18),
+                            ),
                           ),
                           icon: isStarting.value
                               ? const SizedBox(
                                   width: 20,
                                   height: 20,
-                                  child: CircularProgressIndicator(strokeWidth: 2, color: Color(0xFF041326)),
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Color(0xFF041326),
+                                  ),
                                 )
-                              : const Icon(Icons.arrow_forward_rounded),
+                              : const Icon(Icons.rocket_launch_rounded),
                           label: Text(
                             t.common.start,
-                            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
                           ),
-                          onPressed: () async {
-                            if (isStarting.value) return;
-                            isStarting.value = true;
-                            if (!ref.read(analyticsControllerProvider).requireValue) {
-                              loggy.info("disabling analytics per user request");
-                              try {
-                                await ref.read(analyticsControllerProvider.notifier).disableAnalytics();
-                              } catch (error, stackTrace) {
-                                loggy.error("could not disable analytics", error, stackTrace);
-                              }
-                            }
-                            await ref.read(Preferences.introCompleted.notifier).update(true);
-                          },
+                          onPressed: !acceptedTerms.value || isStarting.value
+                              ? null
+                              : () async {
+                                  if (isStarting.value) return;
+                                  isStarting.value = true;
+                                  if (!ref.read(analyticsControllerProvider).requireValue) {
+                                    loggy.info("disabling analytics per user request");
+                                    try {
+                                      await ref
+                                          .read(analyticsControllerProvider.notifier)
+                                          .disableAnalytics();
+                                    } catch (error, stackTrace) {
+                                      loggy.error(
+                                        "could not disable analytics",
+                                        error,
+                                        stackTrace,
+                                      );
+                                    }
+                                  }
+                                  await ref
+                                      .read(Preferences.introCompleted.notifier)
+                                      .update(true);
+                                },
                         ),
                       ),
                     ],
