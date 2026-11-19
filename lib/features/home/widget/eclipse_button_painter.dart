@@ -538,7 +538,27 @@ class _Body {
 
   void paint(Canvas canvas) {
     _Mesh.paint(canvas, _shadow, BlendMode.srcOver, textured: false);
-    canvas.drawCircle(_center, _r, Paint()..color = Colors.white);
+    canvas.drawCircle(
+      _center,
+      _r,
+      Paint()
+        ..shader = RadialGradient(
+          center: const Alignment(-.28, -.34),
+          radius: 1.18,
+          colors: _dark
+              ? const [Color(0xFF123D70), Color(0xFF071E3D), Color(0xFF020B1C)]
+              : const [Color(0xFF174C7D), Color(0xFF0A2444), Color(0xFF06152B)],
+          stops: const [0, .62, 1],
+        ).createShader(Rect.fromCircle(center: _center, radius: _r)),
+    );
+    canvas.drawCircle(
+      _center,
+      _r - 2,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5
+        ..color = const Color(0xAA19DFFF),
+    );
     _Mesh.paint(canvas, _bevel, BlendMode.srcOver, textured: true);
   }
 }
