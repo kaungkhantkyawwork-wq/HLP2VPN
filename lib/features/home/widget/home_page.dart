@@ -1,4 +1,5 @@
 import 'package:dartx/dartx.dart';
+import 'package:hiddify/utils/number_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gap/gap.dart';
@@ -404,7 +405,7 @@ class _DataIpPanel extends HookConsumerWidget {
     );
     final ipState = ref.watch(ipInfoNotifierProvider);
     final ip = connected ? (ipState.valueOrNull?.ip ?? (ipState.isLoading ? 'Checking…' : '--')) : '--';
-    final total = connected ? ((stats?.downlinkTotal as num?) ?? 0).size() : '0 B';
+    final total = connected ? (((stats?.downlinkTotal as num?) ?? 0).toInt()).size() : '0 B';
     const border = Color(0xFF168DFF);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
