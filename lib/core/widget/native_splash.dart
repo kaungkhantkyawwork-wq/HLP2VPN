@@ -66,47 +66,47 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    // Draw behind the status and navigation bars. SafeArea + BoxFit.contain
+    // letterboxed the tall artwork on narrow/tall phones, leaving black bands.
     return ColoredBox(
       color: const Color(0xFF020817),
-      child: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            final imageHeight = constraints.maxHeight * .78;
-            return Stack(
-              alignment: Alignment.center,
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    'assets/images/source/hlp2vpn_splash.png',
-                    fit: BoxFit.contain,
-                    alignment: Alignment.center,
-                  ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return Stack(
+            fit: StackFit.expand,
+            alignment: Alignment.center,
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  'assets/images/source/hlp2vpn_splash.png',
+                  fit: BoxFit.cover,
+                  alignment: Alignment.center,
                 ),
-                Positioned(
-                  bottom: constraints.maxHeight * .075,
-                  child: SizedBox(
-                    width: 42,
-                    height: 42,
-                    child: AnimatedBuilder(
-                      animation: _loader,
-                      builder: (context, child) => Transform.rotate(
-                        angle: _loader.value * 6.283185307179586,
-                        child: child,
-                      ),
-                      child: const CircularProgressIndicator(
-                        value: .72,
-                        strokeWidth: 3,
-                        strokeCap: StrokeCap.round,
-                        color: Color(0xFF08D9FF),
-                        backgroundColor: Color(0x332D8CFF),
-                      ),
+              ),
+              Positioned(
+                bottom: constraints.maxHeight * .035,
+                child: SizedBox(
+                  width: 42,
+                  height: 42,
+                  child: AnimatedBuilder(
+                    animation: _loader,
+                    builder: (context, child) => Transform.rotate(
+                      angle: _loader.value * 6.283185307179586,
+                      child: child,
+                    ),
+                    child: const CircularProgressIndicator(
+                      value: .72,
+                      strokeWidth: 3,
+                      strokeCap: StrokeCap.round,
+                      color: Color(0xFF08D9FF),
+                      backgroundColor: Color(0x332D8CFF),
                     ),
                   ),
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
