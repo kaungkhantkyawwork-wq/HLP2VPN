@@ -159,46 +159,124 @@ class _PremiumHomeBackdrop extends StatelessWidget {
   const _PremiumHomeBackdrop();
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: const BoxDecoration(
+  Widget build(BuildContext context) => const DecoratedBox(
+    decoration: BoxDecoration(
       gradient: RadialGradient(
-        center: Alignment(0, -.28),
-        radius: 1.05,
-        colors: [Color(0xFF092B50), Color(0xFF04172F), Color(0xFF010713)],
-        stops: [0, .42, 1],
+        center: Alignment(0, -.08),
+        radius: 1.18,
+        colors: [Color(0xFF071D3A), Color(0xFF030E20), Color(0xFF010611)],
+        stops: [0, .52, 1],
       ),
     ),
     child: Stack(
+      fit: StackFit.expand,
       children: [
-        Positioned(
-          top: 185,
-          left: -130,
-          right: -130,
-          child: Container(
-            height: 210,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x2210CFFF), width: 1),
-              boxShadow: const [BoxShadow(color: Color(0x18008FFF), blurRadius: 42, spreadRadius: 1)],
-            ),
-          ),
-        ),
-        Positioned(
-          bottom: 115,
-          left: -110,
-          right: -110,
-          child: Container(
-            height: 165,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x1C10BFFF), width: 1),
-              boxShadow: const [BoxShadow(color: Color(0x14008FFF), blurRadius: 36, spreadRadius: 1)],
-            ),
-          ),
-        ),
+        CustomPaint(painter: _NeonRibbonPainter()),
+        // A soft blue atmosphere behind the connection control, without
+        // the old bright cyan wash or horizontal oval outlines.
+        _BackdropGlow(),
       ],
     ),
   );
+}
+
+class _BackdropGlow extends StatelessWidget {
+  const _BackdropGlow();
+
+  @override
+  Widget build(BuildContext context) => IgnorePointer(
+    child: Align(
+      alignment: const Alignment(0, -.02),
+      child: Container(
+        width: 360,
+        height: 520,
+        decoration: const BoxDecoration(
+          gradient: RadialGradient(
+            colors: [Color(0x44216DCE), Color(0x18205AA8), Colors.transparent],
+            stops: [0, .48, 1],
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+class _NeonRibbonPainter extends CustomPainter {
+  const _NeonRibbonPainter();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final top = Path()
+      ..moveTo(-size.width * .12, size.height * .34)
+      ..cubicTo(size.width * .18, size.height * .18, size.width * .43, size.height * .20,
+          size.width * .62, size.height * .02)
+      ..cubicTo(size.width * .78, -size.height * .08, size.width * .92, size.height * .05,
+          size.width * 1.12, -size.height * .04);
+
+    final topFine = Path()
+      ..moveTo(-size.width * .10, size.height * .39)
+      ..cubicTo(size.width * .18, size.height * .24, size.width * .44, size.height * .25,
+          size.width * .65, size.height * .04)
+      ..cubicTo(size.width * .82, -.02 * size.height, size.width * .96, size.height * .08,
+          size.width * 1.10, -.01 * size.height);
+
+    final bottom = Path()
+      ..moveTo(-size.width * .12, size.height * 1.04)
+      ..cubicTo(size.width * .16, size.height * .88, size.width * .42, size.height * .96,
+          size.width * .63, size.height * .82)
+      ..cubicTo(size.width * .82, size.height * .69, size.width * .96, size.height * .76,
+          size.width * 1.12, size.height * .63);
+
+    final bottomFine = Path()
+      ..moveTo(-size.width * .08, size.height * 1.08)
+      ..cubicTo(size.width * .20, size.height * .92, size.width * .45, size.height * .99,
+          size.width * .66, size.height * .85)
+      ..cubicTo(size.width * .84, size.height * .73, size.width * .98, size.height * .80,
+          size.width * 1.10, size.height * .68);
+
+    void glow(Path path, double width, Color color, double blur) {
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..color = color
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, blur);
+      canvas.drawPath(path, paint);
+    }
+
+    void ribbon(Path path, double width) {
+      glow(path, width * 3.8, const Color(0xAA007BFF), 18);
+      glow(path, width * 1.7, const Color(0xCC00BFFF), 7);
+      final paint = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = width
+        ..strokeCap = StrokeCap.round
+        ..shader = const LinearGradient(
+          colors: [Color(0x0016AFFF), Color(0xFF00CFFF), Color(0xFF168BFF), Color(0x001A5CFF)],
+          stops: [0, .32, .72, 1],
+        ).createShader(Offset.zero & size);
+      canvas.drawPath(path, paint);
+      glow(path, 1.1, const Color(0xCC8AEFFF), 1.2);
+    }
+
+    ribbon(top, 2.1);
+    ribbon(topFine, 1.0);
+    ribbon(bottom, 2.0);
+    ribbon(bottomFine, 1.0);
+
+    // Fine blue glints add depth while keeping the central content readable.
+    final speck = Paint()..color = const Color(0x667BCBFF);
+    for (var i = 0; i < 34; i++) {
+      final x = (i * 73.0 % size.width);
+      final y = (i * 131.0 % size.height);
+      if (y > size.height * .34 && y < size.height * .72) continue;
+      canvas.drawCircle(Offset(x, y), i % 5 == 0 ? 1.25 : .65, speck);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _NeonRibbonPainter oldDelegate) => false;
 }
 
 class _NeonCard extends StatelessWidget {
