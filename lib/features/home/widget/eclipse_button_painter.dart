@@ -975,8 +975,46 @@ class _Ctx {
 
   Offset toPx(Offset logoPoint) => logoRect.topLeft + logoPoint * k;
 
-  /// The white button with its soft shadow and bevel.
-  void disc() => _Body(center, r, p.dark).paint(c);
+  /// Dark premium button with a state-coloured neon halo and animated outer sweep.
+  void disc() {
+    final bounds = Rect.fromCircle(center: center, radius: r + 7);
+    final glow = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7
+      ..color = _alpha(col, .78)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 13);
+    c.drawCircle(center, r + 1, glow);
+
+    final busy = f.look == EclipseLook.starting || f.look == EclipseLook.waiting ||
+        f.look == EclipseLook.stopping;
+    if (busy) {
+      final sweep = Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 4
+        ..strokeCap = StrokeCap.round
+        ..shader = SweepGradient(
+          colors: [
+            _alpha(col, .02),
+            _alpha(col, .18),
+            _alpha(col, .95),
+            _alpha(col, .08),
+          ],
+          stops: const [0, .68, .88, 1],
+          transform: GradientRotation(2 * math.pi * f.time / 1.15),
+        ).createShader(bounds);
+      c.drawArc(bounds, 0, 2 * math.pi, false, sweep);
+    } else {
+      c.drawCircle(
+        center,
+        r + 1,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..color = _alpha(col, .92),
+      );
+    }
+    _Body(center, r, p.dark).paint(c);
+  }
 
   void logo({List<_Part>? parts, Color? ghost, double dx = 0}) {
     if (!p.drawLogo) return;
