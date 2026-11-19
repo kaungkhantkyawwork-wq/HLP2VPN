@@ -239,23 +239,21 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                                   ),
                                 ),
                                 const Gap(14),
-                                Wrap(
-                                  alignment: WrapAlignment.center,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  spacing: 4,
-                                  children: [
-                                    Text(
-                                      t.pages.about.privacyPolicy,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: const Color(0xFF8DDFFF),
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ).onTap(() async {
-                                      await UriUtils.tryLaunch(
-                                        Uri.parse(Constants.privacyPolicyUrl),
-                                      );
-                                    }),
-                                  ],
+                                TextButton.icon(
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: const Color(0xFF8DDFFF),
+                                    visualDensity: VisualDensity.compact,
+                                  ),
+                                  onPressed: () async {
+                                    await UriUtils.tryLaunch(
+                                      Uri.parse(Constants.privacyPolicyUrl),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.shield_outlined, size: 16),
+                                  label: Text(
+                                    t.pages.about.privacyPolicy,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
                                 ),
                                 const Gap(18),
                                 Container(
