@@ -382,7 +382,8 @@ class _ConnectionButton extends HookWidget {
     final interval = calm ? AmbientClock.decoration : AmbientClock.lively;
     // still, nothing ticks; nor once connected has settled with the flowing light reduced, nor in
     // a button that waits for a tap
-    final moving = !still && ticking && !(flowStill && calm) && !(eclipseLook == EclipseLook.idle && calm);
+    // Keep the idle light trail moving too: the cyan orbit is part of the ready-to-connect look.
+    final moving = !still && ticking && !(flowStill && calm);
     // counts the frames asked for: all it says is that the button is to be drawn again
     final frame = useValueNotifier(0);
     useEffect(() {
