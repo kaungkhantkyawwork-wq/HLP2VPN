@@ -527,7 +527,11 @@ String _serverFlag(String name) {
   final match = RegExp(r'^([A-Za-z]{2})[-_ ]').firstMatch(name.trim());
   if (match == null) return '';
   final code = match.group(1)!.toUpperCase();
-  if (!RegExp(r'^[A-Z]{2}
+  if (!RegExp(r'^[A-Z]{2}$').hasMatch(code)) return '';
+  return String.fromCharCodes(
+    code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41),
+  );
+}
 
 class _InfoMetric extends StatelessWidget {
   const _InfoMetric({
