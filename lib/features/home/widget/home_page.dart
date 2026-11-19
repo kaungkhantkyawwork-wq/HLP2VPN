@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dartx/dartx.dart';
 import 'package:hiddify/utils/number_formatters.dart';
 import 'package:flutter/material.dart';
@@ -411,22 +413,44 @@ class _DataServerPanel extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(statsNotifierProvider).valueOrNull;
-    final profile = ref.watch(activeProfileProvider).valueOrNull;
     final status = ref.watch(connectionNotifierProvider).valueOrNull;
+    final activeProxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
     final connected = status is Connected;
     final connecting = status is Connecting || status is Waiting || status is HotReloading;
     final total = connected ? (((stats?.downlinkTotal as num?) ?? 0).toInt()).size() : '0 B';
-    final serverName = profile?.name ?? '--';
+
+    // The selected outbound is the actual server (e.g. TH-1 / SG-1), not the
+    // subscription/profile title such as "HLP2VPN Servers".
+    final serverName = activeProxy?.name ?? '--';
     final serverLabel = connected
         ? 'Connected Server'
         : connecting
             ? 'Connecting to'
             : 'Selected Server';
+    final flag = _serverFlag(serverName);
+
+    // Start the session clock only after the tunnel reaches Connected.
+    // It stays fixed while disconnected and starts over on the next session.
+    final connectedAt = useRef<DateTime?>(null);
+    final elapsedTick = useState(0);
+    useEffect(() {
+      if (connected) {
+        connectedAt.value ??= DateTime.now();
+        final timer = Timer.periodic(const Duration(seconds: 1), (_) => elapsedTick.value++);
+        return timer.cancel;
+      }
+      connectedAt.value = null;
+      return null;
+    }, [connected]);
+    final elapsed = connected && connectedAt.value != null
+        ? DateTime.now().difference(connectedAt.value!)
+        : Duration.zero;
+    final timeText = _formatConnectionTime(elapsed);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 15),
+        padding: const EdgeInsets.fromLTRB(12, 14, 12, 10),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
             begin: Alignment.topLeft,
@@ -437,30 +461,189 @@ class _DataServerPanel extends HookConsumerWidget {
           border: Border.all(color: const Color(0xFF168DFF), width: 1.1),
           boxShadow: const [BoxShadow(color: Color(0x44108FFF), blurRadius: 22)],
         ),
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Expanded(
-              child: _InfoMetric(
-                icon: Icons.bar_chart_rounded,
-                color: const Color(0xFF19D9FF),
-                label: 'Data Used',
-                value: total,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: _InfoMetric(
+                    icon: Icons.bar_chart_rounded,
+                    color: const Color(0xFF19D9FF),
+                    label: 'Data Used',
+                    value: total,
+                  ),
+                ),
+                Container(width: 1, height: 48, color: const Color(0x73168DFF)),
+                Expanded(
+                  child: _InfoMetric(
+                    icon: Icons.dns_rounded,
+                    color: const Color(0xFF19D9FF),
+                    label: serverLabel,
+                    value: serverName,
+                    leading: flag,
+                  ),
+                ),
+              ],
             ),
-            Container(width: 1, height: 48, color: const Color(0x73168DFF)),
-            Expanded(
-              child: _InfoMetric(
-                icon: Icons.dns_rounded,
-                color: const Color(0xFF19D9FF),
-                label: serverLabel,
-                value: serverName,
-              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 9),
+              child: Divider(height: 1, color: Color(0x55168DFF)),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.timer_outlined, size: 19, color: Color(0xFF19D9FF)),
+                const Gap(7),
+                const Text('Connection Time', style: TextStyle(color: Colors.white70, fontSize: 13)),
+                const Gap(10),
+                Text(
+                  timeText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    fontFeatures: [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+}
+
+String _formatConnectionTime(Duration duration) {
+  String two(int value) => value.toString().padLeft(2, '0');
+  final hours = duration.inHours;
+  final minutes = duration.inMinutes.remainder(60);
+  final seconds = duration.inSeconds.remainder(60);
+  return '${two(hours)}:${two(minutes)}:${two(seconds)}';
+}
+
+String _serverFlag(String name) {
+  final match = RegExp(r'^([A-Za-z]{2})[-_ ]').firstMatch(name.trim());
+  if (match == null) return '';
+  final code = match.group(1)!.toUpperCase();
+  if (!RegExp(r'^[A-Z]{2}
+
+class _InfoMetric extends StatelessWidget {
+  const _InfoMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    this.onTap,
+    this.leading,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final VoidCallback? onTap;
+  final String? leading;
+
+  @override
+  Widget build(BuildContext context) => InkWell(
+    onTap: onTap,
+    borderRadius: BorderRadius.circular(14),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: color.withValues(alpha: .13),
+              border: Border.all(color: color.withValues(alpha: .7)),
+            ),
+            child: Icon(icon, color: color, size: 25),
+          ),
+          if (leading != null && leading!.isNotEmpty) ...[
+            const Gap(5),
+            Text(leading!, style: const TextStyle(fontSize: 19)),
+          ],
+          const Gap(9),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white70)),
+                const Gap(4),
+                Text(value, maxLines: 2, softWrap: true, overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.white, fontWeight: FontWeight.w800, height: 1.12)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _NetworkMetric extends StatelessWidget {
+  const _NetworkMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: .13),
+            border: Border.all(color: color.withValues(alpha: .72), width: 1),
+            boxShadow: [
+              BoxShadow(color: color.withValues(alpha: .38), blurRadius: 16, spreadRadius: 1),
+            ],
+          ),
+          child: Icon(icon, color: color, size: 23),
+        ),
+        const Gap(5),
+        Text(label, maxLines: 1, style: theme.textTheme.labelMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w700, letterSpacing: .3)),
+        const Gap(3),
+        FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(text: value, style: theme.textTheme.titleMedium?.copyWith(color: Colors.white, fontWeight: FontWeight.w900, shadows: [Shadow(color: color.withValues(alpha: .55), blurRadius: 10)])),
+                if (unit.isNotEmpty)
+                  TextSpan(text: ' $unit', style: theme.textTheme.labelSmall?.copyWith(color: Colors.white70)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+).hasMatch(code)) return '';
+  return String.fromCharCodes(code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41));
 }
 
 class _InfoMetric extends StatelessWidget {
