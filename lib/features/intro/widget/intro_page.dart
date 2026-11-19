@@ -95,34 +95,10 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Container(
-                                  width: 112,
-                                  height: 112,
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF0C2342),
-                                    borderRadius: BorderRadius.circular(28),
-                                    border: Border.all(
-                                      color: const Color(0xFF08D9FF).withValues(alpha: .58),
-                                    ),
-                                    boxShadow: [
-                                      BoxShadow(
-                                        color: const Color(0xFF08D9FF).withValues(alpha: .13),
-                                        blurRadius: 28,
-                                        spreadRadius: 2,
-                                      ),
-                                    ],
-                                  ),
-                                  child: Image.asset(
-                                    'assets/images/source/hlp2vpn_app_icon.png',
-                                    fit: BoxFit.contain,
-                                  ),
-                                ),
-                                const Gap(18),
                                 Image.asset(
                                   'assets/images/source/hlp2vpn_full_logo.png',
-                                  width: 244,
-                                  height: 78,
+                                  width: 340,
+                                  height: 116,
                                   fit: BoxFit.contain,
                                 ),
                                 const Gap(8),
