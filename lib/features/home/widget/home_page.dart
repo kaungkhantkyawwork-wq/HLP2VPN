@@ -35,6 +35,12 @@ class HomePage extends HookConsumerWidget {
     final darkTheme = theme.copyWith(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: _navy,
+      cardTheme: theme.cardTheme.copyWith(
+        color: const Color(0xFF061A34),
+        surfaceTintColor: Colors.transparent,
+        shadowColor: const Color(0x66008CFF),
+        elevation: 0,
+      ),
       colorScheme: theme.colorScheme.copyWith(
         brightness: Brightness.dark,
         surface: _panel,
@@ -149,37 +155,37 @@ class _PremiumHomeBackdrop extends StatelessWidget {
   Widget build(BuildContext context) => DecoratedBox(
     decoration: const BoxDecoration(
       gradient: RadialGradient(
-        center: Alignment(0, -.35),
-        radius: 1.2,
-        colors: [Color(0xFF104A83), Color(0xFF06284D), Color(0xFF010817)],
-        stops: [0, .48, 1],
+        center: Alignment(0, -.28),
+        radius: 1.05,
+        colors: [Color(0xFF092B50), Color(0xFF04172F), Color(0xFF010713)],
+        stops: [0, .42, 1],
       ),
     ),
     child: Stack(
       children: [
         Positioned(
-          top: 145,
-          left: -100,
-          right: -100,
+          top: 185,
+          left: -130,
+          right: -130,
           child: Container(
-            height: 250,
+            height: 210,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x6610CFFF), width: 2),
-              boxShadow: const [BoxShadow(color: Color(0x5510AFFF), blurRadius: 75, spreadRadius: 5)],
+              border: Border.all(color: const Color(0x2210CFFF), width: 1),
+              boxShadow: const [BoxShadow(color: Color(0x18008FFF), blurRadius: 42, spreadRadius: 1)],
             ),
           ),
         ),
         Positioned(
-          bottom: 80,
-          left: -80,
-          right: -80,
+          bottom: 115,
+          left: -110,
+          right: -110,
           child: Container(
-            height: 200,
+            height: 165,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(180),
-              border: Border.all(color: const Color(0x4410BFFF), width: 2),
-              boxShadow: const [BoxShadow(color: Color(0x2210AFFF), blurRadius: 50, spreadRadius: 2)],
+              border: Border.all(color: const Color(0x1C10BFFF), width: 1),
+              boxShadow: const [BoxShadow(color: Color(0x14008FFF), blurRadius: 36, spreadRadius: 1)],
             ),
           ),
         ),
@@ -495,9 +501,9 @@ class _InfoMetric extends StatelessWidget {
                 Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.labelMedium?.copyWith(color: Colors.white70)),
                 const Gap(4),
-                Text(value, maxLines: 1, overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.white, fontWeight: FontWeight.w800)),
+                Text(value, maxLines: 2, softWrap: true, overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: Colors.white, fontWeight: FontWeight.w800, height: 1.12)),
               ],
             ),
           ),
