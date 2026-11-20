@@ -82,9 +82,7 @@ class ProxiesModal extends HookConsumerWidget {
                       child: Padding(
                         padding: const EdgeInsets.all(24),
                         child: Text(
-                          ref.watch(serviceRunningProvider)
-                              ? t.pages.proxies.empty
-                              : t.pages.proxies.connectToSeeProxies,
+                          'No subscription servers found. Add or update a subscription and try again.',
                           textAlign: TextAlign.center,
                         ),
                       ),
