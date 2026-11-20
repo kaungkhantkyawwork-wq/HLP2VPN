@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:dartx/dartx.dart';
 import 'package:hiddify/utils/number_formatters.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gap/gap.dart';
 import 'package:hiddify/core/app_info/app_info_provider.dart';
@@ -612,4 +613,112 @@ String _serverFlag(String name) {
   if (!RegExp(r'^[A-Z]{2}$'
 ).hasMatch(code)) return '';
   return String.fromCharCodes(code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41));
+}
+
+
+class _NetworkMetric extends StatelessWidget {
+  const _NetworkMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    required this.unit,
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final String unit;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 42,
+          height: 42,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: .14),
+            border: Border.all(color: color.withValues(alpha: .75)),
+            boxShadow: [BoxShadow(color: color.withValues(alpha: .28), blurRadius: 13)],
+          ),
+          child: Icon(icon, color: color, size: 25),
+        ),
+        const Gap(7),
+        Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+        const Gap(3),
+        RichText(
+          text: TextSpan(
+            children: [
+              TextSpan(text: value, style: const TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+              if (unit.isNotEmpty) TextSpan(text: ' $unit', style: const TextStyle(color: Colors.white70, fontSize: 12)),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoMetric extends StatelessWidget {
+  const _InfoMetric({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.value,
+    this.leading = '',
+  });
+
+  final IconData icon;
+  final Color color;
+  final String label;
+  final String value;
+  final String leading;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 46,
+          height: 46,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: color.withValues(alpha: .13),
+            border: Border.all(color: color.withValues(alpha: .72)),
+            boxShadow: [BoxShadow(color: color.withValues(alpha: .2), blurRadius: 12)],
+          ),
+          child: Icon(icon, color: color, size: 25),
+        ),
+        const Gap(9),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(label, maxLines: 1, overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white70, fontSize: 12)),
+              const Gap(4),
+              Row(
+                children: [
+                  if (leading.isNotEmpty) ...[
+                    Text(leading, style: const TextStyle(fontSize: 17)),
+                    const Gap(5),
+                  ],
+                  Expanded(
+                    child: Text(value, maxLines: 1, overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
 }
