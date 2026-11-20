@@ -193,6 +193,8 @@ class HomePage extends HookConsumerWidget {
                     ),
                   );
                 },
+                  ),
+                ),
               ),
             ),
           ],
