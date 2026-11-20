@@ -469,8 +469,11 @@ class _LiveNetworkPanel extends HookConsumerWidget {
       connectionNotifierProvider.select((s) => s.valueOrNull is Connected),
     );
     final proxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
-    final down = connected ? (stats?.downlink.toInt() ?? 0) : 0;
-    final up = connected ? (stats?.uplink.toInt() ?? 0) : 0;
+    // The core can report a connected tunnel before traffic counters are available.
+    // Never present missing telemetry as a measured 0 Mbps.
+    final trafficAvailable = connected && (stats?.trafficAvailable ?? false);
+    final down = trafficAvailable ? stats!.downlink.toInt() : 0;
+    final up = trafficAvailable ? stats!.uplink.toInt() : 0;
     final ping = connected && (proxy?.urlTestDelay ?? 0) > 0 ? proxy!.urlTestDelay.toString() : '--';
     final border = theme.brightness == Brightness.dark
         ? const Color(0xFF168DFF)
@@ -508,7 +511,7 @@ class _LiveNetworkPanel extends HookConsumerWidget {
                 icon: Icons.south_rounded,
                 color: const Color(0xFF18E8FF),
                 label: 'Download',
-                value: connected ? formatMbps(down) : '0',
+                value: trafficAvailable ? formatMbps(down) : '--',
                 unit: 'Mbps',
               ),
             ),
@@ -518,7 +521,7 @@ class _LiveNetworkPanel extends HookConsumerWidget {
                 icon: Icons.north_rounded,
                 color: const Color(0xFFFF4DFF),
                 label: 'Upload',
-                value: connected ? formatMbps(up) : '0',
+                value: trafficAvailable ? formatMbps(up) : '--',
                 unit: 'Mbps',
               ),
             ),
