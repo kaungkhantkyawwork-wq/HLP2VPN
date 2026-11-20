@@ -506,7 +506,7 @@ class _DataServerPanel extends HookConsumerWidget {
     final activeProxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
     final connected = status is Connected;
     final connecting = status is Connecting || status is Waiting || status is HotReloading;
-    final total = (((stats?.downlinkTotal as num?) ?? 0).toInt()).size();
+    final total = (stats?.downlinkTotal.toInt() ?? 0).size();
 
     // The selected outbound is the actual server (e.g. TH-1 / SG-1), not the
     // subscription/profile title such as "HLP2VPN Servers".
