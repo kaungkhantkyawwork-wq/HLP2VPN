@@ -137,11 +137,12 @@ class HomePage extends HookConsumerWidget {
                               _NeonCard(
                                 child: Row(
                                   children: [
-                                    IconButton(
-                                      tooltip: 'Refresh subscription',
-                                      onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
-                                      icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
-                                    ),
+                                    if (activeProfile.valueOrNull?.name != 'HLP2VPN Servers')
+                                      IconButton(
+                                        tooltip: 'Refresh subscription',
+                                        onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
+                                        icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
+                                      ),
                                     Container(width: 1, height: 44, color: const Color(0x5538CFFF)),
                                     const Gap(12),
                                     Expanded(
