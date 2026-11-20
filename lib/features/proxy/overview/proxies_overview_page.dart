@@ -4,6 +4,7 @@ import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/preferences/general_preferences.dart';
 import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
+import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/proxy/keep_top/keep_top_widgets.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/proxy/overview/proxies_overview_notifier.dart';
@@ -58,6 +59,12 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
 
                   Widget serverCard(OutboundInfo proxy) {
                     final selected = group.selected == proxy.tag;
+                    final serverTheme = Theme.of(context).copyWith(
+                      colorScheme: Theme.of(context).colorScheme.copyWith(
+                        onSurface: Colors.white,
+                        onSurfaceVariant: const Color(0xFFB8D8F4),
+                      ),
+                    );
                     return Container(
                       margin: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                       decoration: BoxDecoration(
@@ -80,7 +87,9 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(17),
-                        child: ProxyTile(
+                        child: Theme(
+                          data: serverTheme,
+                          child: ProxyTile(
                           proxy,
                           key: ValueKey(proxy.tag),
                           selected: selected,
@@ -88,6 +97,7 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                           onTap: () async {
                             await ref.read(proxiesOverviewNotifierProvider.notifier).changeProxy(group.tag, proxy.tag);
                           },
+                        ),
                         ),
                       ),
                     );
@@ -113,7 +123,8 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                             child: InkWell(
                               borderRadius: BorderRadius.circular(22),
                               onTap: () async {
-                                await ref.read(proxiesOverviewNotifierProvider.notifier).urlTest('select');
+                                await ref.read(proxiesOverviewNotifierProvider.notifier).urlTest(group.tag);
+                                await ref.read(activeProxyNotifierProvider.notifier).switchToLowest(group.tag);
                               },
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 17),
