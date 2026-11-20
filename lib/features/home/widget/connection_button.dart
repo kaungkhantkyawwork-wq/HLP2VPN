@@ -129,9 +129,9 @@ class ConnectionButton extends HookConsumerWidget {
         _Look.connected when degraded => _degradedColor,
         // the traffic waits for the chain hop: still on its way
         _Look.connected when hopPending => const Color(0xFF455FE9),
-        _Look.connected => buttonTheme.connectedColor!,
-        _Look.noProxies => const Color.fromARGB(255, 185, 176, 103),
-        _Look.failed => Colors.red,
+        _Look.connected => const Color(0xFF45FF8B),
+        _Look.noProxies => const Color(0xFFFFD83D),
+        _Look.failed => const Color(0xFFFF354F),
         // the logo's own blue while the connection is on its way
         _Look.connecting || _Look.waiting || _Look.hotReloading || _Look.disconnecting => const Color(0xFFFFC629),
         _ => buttonTheme.idleColor!,
@@ -265,7 +265,7 @@ class _ConnectionButton extends HookWidget {
   /// The other looks keep their motion.
   final bool reduceFlow;
 
-  static const _size = 208.0;
+  static const _size = 220.0;
 
   /// Room round the button for its light.
   static const _glow = 108.0;
@@ -485,21 +485,11 @@ class _ConnectionButton extends HookWidget {
                                           : const Color(0xFF18DFFF),
                                   shadows: [
                                     Shadow(
-                                      color: (look == _Look.connected
-                                              ? const Color(0xFF45FF72)
-                                              : look == _Look.connecting || look == _Look.waiting
-                                                  ? const Color(0xFFFFC928)
-                                                  : const Color(0xFF18DFFF))
-                                          .withValues(alpha: .85),
+                                      color: buttonColor.withValues(alpha: .9),
                                       blurRadius: 24,
                                     ),
                                     Shadow(
-                                      color: (look == _Look.connected
-                                              ? const Color(0xFF45FF72)
-                                              : look == _Look.connecting || look == _Look.waiting
-                                                  ? const Color(0xFFFFC928)
-                                                  : const Color(0xFF18DFFF))
-                                          .withValues(alpha: .45),
+                                      color: buttonColor.withValues(alpha: .55),
                                       blurRadius: 42,
                                     ),
                                   ],
@@ -834,14 +824,12 @@ class _PremiumConnectDialPainter extends CustomPainter {
       Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 7
-        ..shader = const SweepGradient(
-          colors: [
-            Color(0xFF12EFFF),
-            Color(0xFF168BFF),
-            Color(0xFF8A45FF),
-            Color(0xFFE34DFF),
-            Color(0xFF12EFFF),
-          ],
+        ..shader = SweepGradient(
+          colors: _connecting
+              ? [stateColor, Color.lerp(stateColor, Colors.white, .38)!, stateColor]
+              : look == EclipseLook.idle
+                  ? const [Color(0xFF12EFFF), Color(0xFF168BFF), Color(0xFF8A45FF), Color(0xFF12EFFF)]
+                  : [stateColor, Color.lerp(stateColor, Colors.white, .3)!, stateColor],
         ).createShader(outer),
     );
 
