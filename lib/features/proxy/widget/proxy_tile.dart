@@ -107,7 +107,7 @@ class ProxyTile extends HookConsumerWidget with PresLogger {
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
           fontFamily: PlatformUtils.isWindows ? FontFamily.emoji : null,
-          color: faded ? theme.colorScheme.onSurface.withValues(alpha: _fadedAlpha) : null,
+          color: Colors.white,
         ),
       ),
       leading: Padding(
@@ -143,7 +143,7 @@ class ProxyTile extends HookConsumerWidget with PresLogger {
                 if (proxy.isGroup)
                   TextSpan(text: ' (${proxy.groupSelectedTagDisplay.trim()})', style: theme.textTheme.bodySmall),
               ],
-              style: faded ? TextStyle(color: theme.colorScheme.onSurfaceVariant.withValues(alpha: _fadedAlpha)) : null,
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant),
             ),
           ),
           if (word != null) Text('  ·  $word', maxLines: 1, style: TextStyle(color: colors.accent)),
@@ -230,7 +230,13 @@ class ProxyTile extends HookConsumerWidget with PresLogger {
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _Signal(_Logo.lit(delayColor(context, delay), bars: delay < 300 ? 3 : (delay < 800 ? 2 : 1))),
+            _Signal(
+              Icon(
+                Icons.signal_cellular_alt_rounded,
+                size: 17,
+                color: delayColor(context, delay),
+              ),
+            ),
             const Gap(5),
             _PingNumber(delay, color: delayColor(context, delay)),
           ],
