@@ -453,9 +453,13 @@ class AppVersionLabel extends HookConsumerWidget {
 }
 
 
-/// Converts the core's byte-per-second counter to decimal megabits per second.
-String formatMbps(int bytesPerSecond) =>
-    ((bytesPerSecond * 8) / 1000000).toStringAsFixed(2);
+/// Displays low traffic in Kbps so ordinary browsing does not round down to 0.00 Mbps.
+({String value, String unit}) formatTrafficRate(int bytesPerSecond) {
+  if (bytesPerSecond <= 0) return (value: '0.0', unit: 'Kbps');
+  final kilobits = bytesPerSecond * 8 / 1000;
+  if (kilobits < 1000) return (value: kilobits.toStringAsFixed(1), unit: 'Kbps');
+  return (value: (kilobits / 1000).toStringAsFixed(2), unit: 'Mbps');
+}
 
 /// Live tunnel traffic from the core; never shows sample or hard-coded speeds.
 class _LiveNetworkPanel extends HookConsumerWidget {
@@ -479,6 +483,8 @@ class _LiveNetworkPanel extends HookConsumerWidget {
     final trafficAvailable = connected && hasTrafficCounters;
     final down = trafficAvailable ? stats!.downlink.toInt() : 0;
     final up = trafficAvailable ? stats!.uplink.toInt() : 0;
+    final downSpeed = formatTrafficRate(down);
+    final upSpeed = formatTrafficRate(up);
     final ping = connected && (proxy?.urlTestDelay ?? 0) > 0 ? proxy!.urlTestDelay.toString() : '--';
     final border = theme.brightness == Brightness.dark
         ? const Color(0xFF168DFF)
@@ -516,8 +522,8 @@ class _LiveNetworkPanel extends HookConsumerWidget {
                 icon: Icons.south_rounded,
                 color: const Color(0xFF18E8FF),
                 label: 'Download',
-                value: trafficAvailable ? formatMbps(down) : '--',
-                unit: 'Mbps',
+                value: trafficAvailable ? downSpeed.value : '--',
+                unit: trafficAvailable ? downSpeed.unit : '',
               ),
             ),
             Container(width: 1, height: 48, color: border.withValues(alpha: .35)),
@@ -526,8 +532,8 @@ class _LiveNetworkPanel extends HookConsumerWidget {
                 icon: Icons.north_rounded,
                 color: const Color(0xFFFF4DFF),
                 label: 'Upload',
-                value: trafficAvailable ? formatMbps(up) : '--',
-                unit: 'Mbps',
+                value: trafficAvailable ? upSpeed.value : '--',
+                unit: trafficAvailable ? upSpeed.unit : '',
               ),
             ),
             Container(width: 1, height: 48, color: border.withValues(alpha: .35)),
