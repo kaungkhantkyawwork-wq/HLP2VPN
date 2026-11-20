@@ -38,7 +38,52 @@ class ProxiesModal extends HookConsumerWidget {
             gradient: LinearGradient(begin: Alignment.topCenter, end: Alignment.bottomCenter,
               colors: [Color(0xFF092747), Color(0xFF041426), Color(0xFF020B16)]),
           ),
-          child: DraggableScrollableSheet(
+          child: Stack(
+            children: [
+              const Positioned.fill(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0xFF071A2C), Color(0xFF061426), Color(0xFF030A14)],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: -105,
+                right: -115,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 310,
+                    height: 310,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [Color(0x33218DCE), Color(0x00218DCE)],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -145,
+                left: -125,
+                child: IgnorePointer(
+                  child: Container(
+                    width: 330,
+                    height: 330,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [Color(0x2213BFEA), Color(0x0013BFEA)],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              DraggableScrollableSheet(
         initialChildSize: .72,
         minChildSize: .42,
         maxChildSize: .92,
@@ -202,6 +247,8 @@ class ProxiesModal extends HookConsumerWidget {
             ),
           ],
         ),
+              ),
+            ],
           ),
         ),
       ),
