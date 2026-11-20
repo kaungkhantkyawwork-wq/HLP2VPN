@@ -145,12 +145,6 @@ class _HlpAddProfileTheme extends StatelessWidget {
             states.contains(WidgetState.selected) ? _blue.withValues(alpha: .55) : const Color(0xFF34465A)),
         trackOutlineColor: WidgetStateProperty.all(_cyan.withValues(alpha: .65)),
       ),
-      actionChipTheme: ActionChipThemeData(
-        backgroundColor: _panel,
-        side: const BorderSide(color: _blue),
-        labelStyle: const TextStyle(color: Colors.white),
-        iconTheme: const IconThemeData(color: _cyan),
-      ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
           backgroundColor: _blue,
