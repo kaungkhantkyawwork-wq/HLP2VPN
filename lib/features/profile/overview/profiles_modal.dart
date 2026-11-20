@@ -42,7 +42,7 @@ class ProfilesModal extends HookConsumerWidget {
                   itemBuilder: (context, index) => ProfileTile(key: ValueKey(data[index].id), profile: data[index]),
                   itemCount: data.length,
                 ),
-                Positioned(
+                if (data.any((profile) => profile.name != 'HLP2VPN Servers')) Positioned(
                   bottom: 0,
                   left: 16,
                   right: 16,
