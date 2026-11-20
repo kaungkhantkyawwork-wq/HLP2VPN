@@ -880,16 +880,21 @@ class _PremiumConnectDialPainter extends CustomPainter {
     canvas.drawPath(
       wave,
       Paint()
-        ..shader = const LinearGradient(
+        ..shader = LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0x0030DFFF), Color(0xAA08BFFF), Color(0xAA8D4DFF)],
+          colors: [
+            stateColor.withValues(alpha: 0),
+            stateColor.withValues(alpha: .48),
+            Color.lerp(stateColor, Colors.white, .12)!.withValues(alpha: .62),
+          ],
+          stops: const [0, .48, 1],
         ).createShader(face),
     );
     final reflection = Paint()
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2.2
-      ..color = const Color(0xFF62F5FF).withValues(alpha: .9)
+      ..color = Color.lerp(stateColor, Colors.white, .28)!.withValues(alpha: .9)
       ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
     canvas.drawPath(wave, reflection);
     canvas.restore();
