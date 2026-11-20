@@ -467,9 +467,14 @@ class _LiveNetworkPanel extends HookConsumerWidget {
       connectionNotifierProvider.select((s) => s.valueOrNull is Connected),
     );
     final proxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
-    // The core can report a connected tunnel before traffic counters are available.
-    // Never present missing telemetry as a measured 0 Mbps.
-    final trafficAvailable = connected && (stats?.trafficAvailable ?? false);
+    // The core's trafficAvailable flag can be false on some Android builds even
+    // while cumulative byte counters are being updated. Trust real counters first;
+    // the polling layer derives current Mbps from the change in those totals.
+    final hasTrafficCounters = stats != null &&
+        (stats.trafficAvailable ||
+            stats.downlinkTotal.toInt() > 0 ||
+            stats.uplinkTotal.toInt() > 0);
+    final trafficAvailable = connected && hasTrafficCounters;
     final down = trafficAvailable ? stats!.downlink.toInt() : 0;
     final up = trafficAvailable ? stats!.uplink.toInt() : 0;
     final ping = connected && (proxy?.urlTestDelay ?? 0) > 0 ? proxy!.urlTestDelay.toString() : '--';
@@ -553,7 +558,10 @@ class _DataServerPanel extends HookConsumerWidget {
     final activeServer = ref.watch(activeProxyCardProvider)?.server;
     final connected = status is Connected;
     final connecting = status is Connecting || status is Waiting || status is HotReloading;
-    final total = (stats?.downlinkTotal.toInt() ?? 0).size();
+    // Data Used is the sum of both directions, not download-only.
+    final totalBytes = (stats?.downlinkTotal.toInt() ?? 0) +
+        (stats?.uplinkTotal.toInt() ?? 0);
+    final total = totalBytes.size();
 
     final serverName = activeServer?.name ?? '--';
     final serverLabel = connected
