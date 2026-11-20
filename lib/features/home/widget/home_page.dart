@@ -37,6 +37,11 @@ class HomePage extends HookConsumerWidget {
     final activeProfile = ref.watch(activeProfileProvider);
     final darkTheme = theme.copyWith(
       brightness: Brightness.dark,
+      // ProfileTile and other upstream widgets inherit this text palette. The home
+      // surface is navy; keeping the light-theme text colours made server names
+      // nearly invisible on the selected-server card.
+      textTheme: theme.textTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
+      primaryTextTheme: theme.primaryTextTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
       scaffoldBackgroundColor: _navy,
       cardTheme: theme.cardTheme.copyWith(
         color: const Color(0xFF061A34),
@@ -501,7 +506,7 @@ class _DataServerPanel extends HookConsumerWidget {
     final activeProxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
     final connected = status is Connected;
     final connecting = status is Connecting || status is Waiting || status is HotReloading;
-    final total = connected ? (((stats?.downlinkTotal as num?) ?? 0).toInt()).size() : '0 B';
+    final total = (((stats?.downlinkTotal as num?) ?? 0).toInt()).size();
 
     // The selected outbound is the actual server (e.g. TH-1 / SG-1), not the
     // subscription/profile title such as "HLP2VPN Servers".
