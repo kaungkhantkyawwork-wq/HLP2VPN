@@ -47,7 +47,15 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
           const Gap(8),
         ],
       ),
-      body: proxies.when(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF071A2C), Color(0xFF061426), Color(0xFF030A14)],
+          ),
+        ),
+        child: proxies.when(
         data: (group) => group != null
             ? Builder(
                 builder: (context) {
@@ -224,6 +232,7 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
           ),
         ),
         loading: () => const Center(child: CircularProgressIndicator(color: _cyan)),
+        ),
       ),
     );
   }
