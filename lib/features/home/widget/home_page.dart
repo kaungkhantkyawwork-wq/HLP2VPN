@@ -128,7 +128,7 @@ class HomePage extends HookConsumerWidget {
                       fit: BoxFit.scaleDown,
                       alignment: Alignment.center,
                       child: SizedBox(
-                        width: constraints.maxWidth.clamp(0, 620),
+                        width: constraints.maxWidth.clamp(0.0, 620.0).toDouble(),
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
                           child: Column(
