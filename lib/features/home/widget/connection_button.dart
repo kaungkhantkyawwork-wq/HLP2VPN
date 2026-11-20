@@ -134,7 +134,7 @@ class ConnectionButton extends HookConsumerWidget {
         _Look.failed => const Color(0xFFFF354F),
         // the logo's own blue while the connection is on its way
         _Look.connecting || _Look.waiting || _Look.hotReloading || _Look.disconnecting => const Color(0xFFFFC629),
-        _ => buttonTheme.idleColor!,
+        _ => const Color(0xFF32DFFF),
       },
       image: switch (look) {
         _Look.connected || _Look.noProxies || _Look.hotReloading => Assets.images.connectNorouz,
@@ -799,12 +799,7 @@ class _PremiumConnectDialPainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide * .445;
     final outer = Rect.fromCircle(center: center, radius: radius);
-    final stateColor = switch (look) {
-      EclipseLook.idle => const Color(0xFF32DFFF),
-      EclipseLook.starting || EclipseLook.waiting || EclipseLook.stopping => const Color(0xFFFFD83D),
-      EclipseLook.connected => const Color(0xFF45FF8B),
-      EclipseLook.error => const Color(0xFFFF354F),
-    };
+    final stateColor = color;
 
     // Broad, saturated state glow behind the glass dial.
     canvas.drawCircle(
