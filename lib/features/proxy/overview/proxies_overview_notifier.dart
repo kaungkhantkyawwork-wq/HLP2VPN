@@ -105,10 +105,9 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
       _pinned = null;
       _resubscribeDelay = _minResubscribeDelay;
     }
-    if (!serviceRunning) {
-      // Empty data (not Stream.error / not loading): the page shows "Connect to see proxies".
-      return Stream.value(null);
-    }
+    // Keep watching the core's configured outbound list even while the VPN tunnel is
+    // disconnected. The core is initialized during app startup and can expose the parsed
+    // subscription outbounds before the user starts the VPN service.
     Timer? resubscribe;
     ref.onDispose(() => resubscribe?.cancel());
     return ref
