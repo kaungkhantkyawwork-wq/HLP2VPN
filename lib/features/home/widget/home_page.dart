@@ -88,15 +88,13 @@ class HomePage extends HookConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               SizedBox(
-                width: 250,
-                height: 62,
+                width: 290,
+                height: 72,
                 child: Image.asset(
                   'assets/images/source/hlp2vpn_header_logo.png',
                   fit: BoxFit.contain,
                 ),
               ),
-              const Gap(6),
-              const AppVersionLabel(),
             ],
           ),
           actions: [
