@@ -508,9 +508,36 @@ class HiddifyCoreService with InfraLogger {
       // server stream. Some Android service/channel resumes leave that stream open but
       // no longer delivering fresh traffic values, which freezes the Home speeds at 0.
       // The first sample is requested immediately; subsequent samples arrive once a second.
+      SystemInfo? previous;
+      DateTime? previousAt;
       return Stream<int>.periodic(const Duration(seconds: 1), (tick) => tick)
           .startWith(-1)
-          .asyncMap((_) => core.bgClient.getSystemInfo(Empty()));
+          .asyncMap((_) => core.bgClient.getSystemInfo(Empty()))
+          .map((current) {
+            final now = DateTime.now();
+            final last = previous;
+            final lastAt = previousAt;
+            previous = current;
+            previousAt = now;
+
+            // Derive live throughput from the core's cumulative byte counters.
+            // This is more reliable than the instantaneous rate fields on cores
+            // that report those fields as zero or stale while traffic is flowing.
+            if (last == null || lastAt == null || !current.trafficAvailable) {
+              return current.clone()
+                ..downlink = Int64.ZERO
+                ..uplink = Int64.ZERO;
+            }
+
+            final seconds = now.difference(lastAt).inMicroseconds / Duration.microsecondsPerSecond;
+            if (seconds <= 0) return current;
+
+            final downBytes = current.downlinkTotal.toInt() - last.downlinkTotal.toInt();
+            final upBytes = current.uplinkTotal.toInt() - last.uplinkTotal.toInt();
+            return current.clone()
+              ..downlink = Int64((downBytes < 0 ? 0 : downBytes / seconds).round())
+              ..uplink = Int64((upBytes < 0 ? 0 : upBytes / seconds).round());
+          });
     } catch (e) {
       loggy.error("error watching stats: $e");
       rethrow;
