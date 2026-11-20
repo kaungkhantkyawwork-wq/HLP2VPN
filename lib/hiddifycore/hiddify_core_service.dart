@@ -523,10 +523,10 @@ class HiddifyCoreService with InfraLogger {
             // Derive live throughput from the core's cumulative byte counters.
             // This is more reliable than the instantaneous rate fields on cores
             // that report those fields as zero or stale while traffic is flowing.
-            if (last == null || lastAt == null || !current.trafficAvailable) {
+            if (last == null || lastAt == null) {
               return current.clone()
-                ..downlink = Int64.ZERO
-                ..uplink = Int64.ZERO;
+                ..downlink = Int64(0)
+                ..uplink = Int64(0);
             }
 
             final seconds = now.difference(lastAt).inMicroseconds / Duration.microsecondsPerSecond;
