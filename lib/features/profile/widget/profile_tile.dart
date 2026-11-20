@@ -49,7 +49,8 @@ class ProfileTile extends HookConsumerWidget {
       _ => null,
     };
 
-    final showActionButton = profile is RemoteProfileEntity || !isMain;
+    final isBundledProfile = profile.name == 'HLP2VPN Servers';
+    final showActionButton = !isBundledProfile && (profile is RemoteProfileEntity || !isMain);
 
     void handleTap() {
       if (isMain) {
@@ -347,6 +348,11 @@ class ProfileActionsMenu extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(translationsProvider).requireValue;
+
+    // The app-provided subscription is managed internally, never via user actions.
+    if (profile.name == 'HLP2VPN Servers') {
+      return const SizedBox.shrink();
+    }
 
     final menuItems = [
       AdaptiveMenuItem(
