@@ -227,15 +227,18 @@ class ProxyTile extends HookConsumerWidget with PresLogger {
               .fadeIn(duration: 200.ms);
     return switch (state) {
       ProxyRowState.ready => pop(
-        number
-            ? _PingNumber(delay, color: delayColor(context, delay))
-            : _Signal(_Logo.lit(delayColor(context, delay), bars: delay < 300 ? 3 : (delay < 800 ? 2 : 1))),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _Signal(_Logo.lit(delayColor(context, delay), bars: delay < 300 ? 3 : (delay < 800 ? 2 : 1))),
+            const Gap(5),
+            _PingNumber(delay, color: delayColor(context, delay)),
+          ],
+        ),
         450.ms,
       ),
       ProxyRowState.pingFailed => pop(
-        number
-            ? Icon(Icons.close_rounded, size: 18, color: colors.red)
-            : _Signal(_Logo.lit(colors.red, bars: 0), badge: _Badge(colors.red, Icons.close_rounded)),
+        Text('TIME OUT', style: TextStyle(fontSize: 10, color: colors.red, fontWeight: FontWeight.w800, letterSpacing: .2)),
         350.ms,
       ),
       ProxyRowState.untested => _Signal(_Logo.loading(colors.wait)),
@@ -367,7 +370,7 @@ class _PingNumber extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-    '$delay',
+    '$delay ms',
     textDirection: TextDirection.ltr,
     style: TextStyle(fontSize: 13, height: 1.1, color: color, fontWeight: FontWeight.w600),
   );
