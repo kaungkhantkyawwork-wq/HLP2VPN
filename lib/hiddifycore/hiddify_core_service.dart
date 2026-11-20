@@ -502,9 +502,16 @@ class HiddifyCoreService with InfraLogger {
   // Stream<SingboxStatus> watchStatus() => _status;
 
   Stream<SystemInfo> watchStats() {
-    loggy.debug("watching stats");
+    loggy.debug("watching live stats (1-second polling)");
     try {
-      return core.bgClient.getSystemInfoStream(Empty()).cancelOnUnsubscribe;
+      // Poll the core's current system counters instead of relying on the long-lived
+      // server stream. Some Android service/channel resumes leave that stream open but
+      // no longer delivering fresh traffic values, which freezes the Home speeds at 0.
+      // The first sample is requested immediately; subsequent samples arrive once a second.
+      return Stream<int>.periodic(const Duration(seconds: 1), (tick) => tick)
+          .startWith(-1)
+          .asyncMap((_) => core.bgClient.getSystemInfo(Empty()))
+          .cancelOnUnsubscribe;
     } catch (e) {
       loggy.error("error watching stats: $e");
       rethrow;
