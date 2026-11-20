@@ -50,6 +50,12 @@ class ProfileTile extends HookConsumerWidget {
     };
 
     final isBundledProfile = profile.name == 'HLP2VPN Servers';
+    useEffect(() {
+      if (isBundledProfile && !profile.pinned) {
+        Future.microtask(() => ref.read(profilesNotifierProvider.notifier).togglePin(profile));
+      }
+      return null;
+    }, [profile.id, profile.pinned]);
     final showActionButton = !isBundledProfile && (profile is RemoteProfileEntity || !isMain);
 
     void handleTap() {
