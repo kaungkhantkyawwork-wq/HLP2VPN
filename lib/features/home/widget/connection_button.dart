@@ -307,6 +307,25 @@ class _ConnectionButton extends HookWidget {
     double now() => clock.elapsedMicroseconds / 1e6;
     // keyboard / TV remote focus: a ring round the button, so the face and its logo stay visible
     final focused = useState(false);
+    final connectedAt = useRef<DateTime?>(null);
+    final connectionTick = useState(0);
+    useEffect(() {
+      if (look != _Look.connected) {
+        connectedAt.value = null;
+        connectionTick.value = 0;
+        return null;
+      }
+      connectedAt.value ??= DateTime.now();
+      final timer = Timer.periodic(const Duration(seconds: 1), (_) => connectionTick.value++);
+      return timer.cancel;
+    }, [look]);
+    String connectionElapsed() {
+      final elapsed = connectedAt.value == null ? Duration.zero : DateTime.now().difference(connectedAt.value!);
+      String two(int n) => n.toString().padLeft(2, '0');
+      return '${two(elapsed.inHours)}:${two(elapsed.inMinutes.remainder(60))}:${two(elapsed.inSeconds.remainder(60))}';
+    }
+    // Keep the connection timer visible inside the button, as in the supplied reference.
+    connectionTick.value;
 
     // when the look last changed, and from what
     final eclipseLook = _eclipseLook;
@@ -485,37 +504,58 @@ class _ConnectionButton extends HookWidget {
                           highlightColor: Colors.black.withValues(alpha: .06),
                           splashColor: Colors.black.withValues(alpha: .08),
                           child: Padding(
-                             padding: const EdgeInsets.all(54),
-                             child: Icon(
-                               Icons.power_settings_new_rounded,
-                               size: 86,
-                               color: look == _Look.connected
-                                   ? const Color(0xFF45FF72)
-                                   : look == _Look.connecting || look == _Look.waiting
-                                       ? const Color(0xFFFFC928)
-                                       : const Color(0xFF18DFFF),
-                               shadows: [
-                                 Shadow(
-                                   color: (look == _Look.connected
-                                           ? const Color(0xFF45FF72)
-                                           : look == _Look.connecting || look == _Look.waiting
-                                               ? const Color(0xFFFFC928)
-                                               : const Color(0xFF18DFFF))
-                                       .withValues(alpha: .85),
-                                   blurRadius: 24,
-                                 ),
-                                 Shadow(
-                                   color: (look == _Look.connected
-                                           ? const Color(0xFF45FF72)
-                                           : look == _Look.connecting || look == _Look.waiting
-                                               ? const Color(0xFFFFC928)
-                                               : const Color(0xFF18DFFF))
-                                       .withValues(alpha: .45),
-                                   blurRadius: 42,
-                                 ),
-                               ],
-                             ),
-                           ),
+                            padding: const EdgeInsets.all(30),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.power_settings_new_rounded,
+                                  size: 68,
+                                  color: look == _Look.connected
+                                      ? const Color(0xFF45FF72)
+                                      : look == _Look.connecting || look == _Look.waiting
+                                          ? const Color(0xFFFFC928)
+                                          : const Color(0xFF18DFFF),
+                                  shadows: [
+                                    Shadow(
+                                      color: (look == _Look.connected
+                                              ? const Color(0xFF45FF72)
+                                              : look == _Look.connecting || look == _Look.waiting
+                                                  ? const Color(0xFFFFC928)
+                                                  : const Color(0xFF18DFFF))
+                                          .withValues(alpha: .85),
+                                      blurRadius: 24,
+                                    ),
+                                    Shadow(
+                                      color: (look == _Look.connected
+                                              ? const Color(0xFF45FF72)
+                                              : look == _Look.connecting || look == _Look.waiting
+                                                  ? const Color(0xFFFFC928)
+                                                  : const Color(0xFF18DFFF))
+                                          .withValues(alpha: .45),
+                                      blurRadius: 42,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  label,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                                ),
+                                if (look == _Look.connected) ...[
+                                  const SizedBox(height: 5),
+                                  Text(connectionElapsed(), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                                ] else if (look == _Look.connecting || look == _Look.waiting) ...[
+                                  const SizedBox(height: 4),
+                                  const Text('Please wait', style: TextStyle(color: Color(0xFFD7F5FF), fontSize: 12)),
+                                ],
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       Positioned.fill(
@@ -568,13 +608,33 @@ class _ConnectionButton extends HookWidget {
         Gap(24 * scale),
         Column(
           children: [
-            AnimatedText(
-              label,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                shadows: [
-                  Shadow(color: buttonColor.withValues(alpha: .55), blurRadius: 12),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
+              decoration: BoxDecoration(
+                color: buttonColor.withValues(alpha: .13),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: buttonColor.withValues(alpha: .9), width: 1.2),
+                boxShadow: [BoxShadow(color: buttonColor.withValues(alpha: .38), blurRadius: 16)],
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    look == _Look.connected ? Icons.verified_rounded
+                        : look == _Look.failed ? Icons.error_rounded
+                        : look == _Look.connecting || look == _Look.waiting ? Icons.autorenew_rounded
+                        : Icons.shield_outlined,
+                    size: 17,
+                    color: buttonColor,
+                  ),
+                  const SizedBox(width: 7),
+                  AnimatedText(
+                    label,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: buttonColor,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
                 ],
               ),
             ),
