@@ -25,6 +25,74 @@ class MyAdaptiveLayout extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(translationsProvider).requireValue;
+    final isSettingsBranch = navigationShell.currentIndex ==
+        getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'settings');
+    const settingsNavy = Color(0xFF061426);
+    const settingsCyan = Color(0xFF19D7FF);
+    final settingsTheme = Theme.of(context).copyWith(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: settingsNavy,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: settingsCyan,
+        brightness: Brightness.dark,
+        surface: const Color(0xFF0A2542),
+        primary: settingsCyan,
+        secondary: const Color(0xFF648BFF),
+      ),
+      textTheme: Theme.of(context).textTheme.apply(
+        bodyColor: const Color(0xFFF2F8FF),
+        displayColor: const Color(0xFFF2F8FF),
+      ),
+      primaryTextTheme: Theme.of(context).primaryTextTheme.apply(
+        bodyColor: const Color(0xFFF2F8FF),
+        displayColor: const Color(0xFFF2F8FF),
+      ),
+      appBarTheme: const AppBarTheme(
+        backgroundColor: settingsNavy,
+        foregroundColor: Color(0xFFF3FAFF),
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+      ),
+      iconTheme: const IconThemeData(color: settingsCyan),
+      listTileTheme: const ListTileThemeData(
+        textColor: Color(0xFFF2F8FF),
+        iconColor: settingsCyan,
+        subtitleTextStyle: TextStyle(color: Color(0xFFA9C2D9)),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? settingsCyan : const Color(0xFFB8CBE0)),
+        trackColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? const Color(0xFF176B9D) : const Color(0xFF34465A)),
+        trackOutlineColor: WidgetStateProperty.all(settingsCyan.withValues(alpha: .55)),
+      ),
+      dividerTheme: const DividerThemeData(color: Color(0x3327CFFF)),
+      popupMenuTheme: const PopupMenuThemeData(
+        color: Color(0xFF0A2542),
+        textStyle: TextStyle(color: Color(0xFFF2F8FF)),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: const Color(0xFF0A2542),
+        labelStyle: const TextStyle(color: Color(0xFFA9C2D9)),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF1B5A7C)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: settingsCyan, width: 1.5),
+        ),
+      ),
+      floatingActionButtonTheme: const FloatingActionButtonThemeData(
+        backgroundColor: Color(0xFF087FC5),
+        foregroundColor: Colors.white,
+      ),
+    );
+    final branchContent = Theme(
+      data: isSettingsBranch ? settingsTheme : Theme.of(context),
+      child: navigationShell,
+    );
     // focus switch management
     final primaryFocusHash = useState<int?>(null);
     final navScopeNode = useFocusScopeNode();
@@ -94,7 +162,7 @@ class MyAdaptiveLayout extends HookConsumerWidget {
         child: Material(
           child: Scaffold(
             body: isMobileBreakpoint
-                ? navigationShell
+                ? branchContent
                 : Row(
                     children: [
                       FocusScope(
@@ -121,7 +189,7 @@ class MyAdaptiveLayout extends HookConsumerWidget {
                       // it, up to the nearest container. Without this boundary
                       // that reached the rail, so NVDA saw no sidebar at all
                       // (flutter/flutter#135656).
-                      Expanded(child: Semantics(container: true, child: navigationShell)),
+                      Expanded(child: Semantics(container: true, child: branchContent)),
                     ],
                   ),
             bottomNavigationBar: isMobileBreakpoint &&
