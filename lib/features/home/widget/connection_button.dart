@@ -265,10 +265,10 @@ class _ConnectionButton extends HookWidget {
   /// The other looks keep their motion.
   final bool reduceFlow;
 
-  static const _size = 220.0;
+  static const _size = 208.0;
 
   /// Room round the button for its light.
-  static const _glow = 116.0;
+  static const _glow = 108.0;
 
   /// The button and its light take most of a short screen (a TV, a phone held sideways, a small
   /// window): full size from [_fullFrom] logical pixels of height, shrinking evenly to
@@ -484,14 +484,14 @@ class _ConnectionButton extends HookWidget {
                           highlightColor: Colors.black.withValues(alpha: .06),
                           splashColor: Colors.black.withValues(alpha: .08),
                           child: Padding(
-                            padding: const EdgeInsets.all(30),
+                            padding: const EdgeInsets.all(26),
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(
                                   Icons.power_settings_new_rounded,
-                                  size: 68,
+                                  size: 64,
                                   color: look == _Look.connected
                                       ? const Color(0xFF45FF72)
                                       : look == _Look.connecting || look == _Look.waiting
@@ -524,7 +524,7 @@ class _ConnectionButton extends HookWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
+                                  style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
                                 ),
                                 if (look == _Look.connecting || look == _Look.waiting) ...[
                                   const SizedBox(height: 4),
@@ -582,7 +582,7 @@ class _ConnectionButton extends HookWidget {
             ),
           ),
         ),
-        Gap(24 * scale),
+        Gap(18 * scale),
         Column(
           children: [
             Container(
