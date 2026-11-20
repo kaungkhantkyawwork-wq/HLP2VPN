@@ -455,6 +455,10 @@ class AppVersionLabel extends HookConsumerWidget {
 }
 
 
+/// Converts the core's byte-per-second counter to decimal megabits per second.
+String formatMbps(int bytesPerSecond) =>
+    ((bytesPerSecond * 8) / 1000000).toStringAsFixed(2);
+
 /// Live tunnel traffic from the core; never shows sample or hard-coded speeds.
 class _LiveNetworkPanel extends HookConsumerWidget {
   const _LiveNetworkPanel();
