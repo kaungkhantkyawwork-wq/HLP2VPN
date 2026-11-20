@@ -89,29 +89,107 @@ class ProxiesModal extends HookConsumerWidget {
                       ),
                     );
                   }
-                  return ListView.separated(
+                  final bestMatches = group.items.where((proxy) => proxy.name.toLowerCase() == 'lowest').toList();
+                  final bestServer = bestMatches.isEmpty ? null : bestMatches.first;
+                  final originalServers = group.items
+                      .where((proxy) => !proxy.isGroup && !proxy.tag.contains('§hide§'))
+                      .toList();
+
+                  BoxDecoration serverCardDecoration(bool selected) => BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: selected
+                          ? const [Color(0xFF103D59), Color(0xFF08243D)]
+                          : const [Color(0xFF0A2742), Color(0xFF061A2E)],
+                    ),
+                    border: Border.all(
+                      color: selected ? const Color(0xFF18DFFF) : const Color(0xFF1B5A7C),
+                      width: selected ? 1.8 : 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF08BFEA).withValues(alpha: selected ? .20 : .07),
+                        blurRadius: selected ? 18 : 10,
+                        spreadRadius: selected ? 1 : 0,
+                      ),
+                    ],
+                  );
+
+                  return ListView(
                     controller: scrollController,
                     padding: const EdgeInsets.fromLTRB(14, 14, 14, 28),
-                    itemCount: group.items.length,
-                    separatorBuilder: (_, _) => const Gap(10),
-                    itemBuilder: (context, index) {
-                      final proxy = group.items[index];
-                      final selected = group.selected == proxy.tag;
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight,
-                            colors: selected ? const [Color(0xFF103D59), Color(0xFF08243D)] : const [Color(0xFF0A2742), Color(0xFF061A2E)]),
-                          border: Border.all(color: selected ? const Color(0xFF18DFFF) : const Color(0xFF1B5A7C), width: selected ? 1.8 : 1),
-                          boxShadow: [BoxShadow(color: const Color(0xFF08BFEA).withValues(alpha: selected ? .20 : .07), blurRadius: selected ? 18 : 10, spreadRadius: selected ? 1 : 0)],
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(4, 2, 4, 10),
+                        child: Text(
+                          'BEST SERVER',
+                          style: TextStyle(color: Color(0xFF18DFFF), fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.3),
                         ),
-                        clipBehavior: Clip.antiAlias,
-                        child: ProxyTile(
-                          proxy, key: ValueKey(proxy.tag), selected: selected,
-                          onTap: () async => await ref.read(proxiesOverviewNotifierProvider.notifier).changeProxy(group.tag, proxy.tag),
+                      ),
+                      if (bestServer != null)
+                        Container(
+                          decoration: serverCardDecoration(group.selected == bestServer.tag),
+                          clipBehavior: Clip.antiAlias,
+                          child: ListTile(
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                            leading: const CircleAvatar(
+                              backgroundColor: Color(0x3320D8FF),
+                              child: Icon(Icons.bolt_rounded, color: Color(0xFF18DFFF), size: 27),
+                            ),
+                            title: const Text('Best Server', style: TextStyle(color: Color(0xFFF3FBFF), fontWeight: FontWeight.w800, fontSize: 17)),
+                            subtitle: const Text('Auto • Lowest Ping', style: TextStyle(color: Color(0xFF9BC8DD), fontSize: 13)),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  bestServer.urlTestDelay > 0 && bestServer.urlTestDelay < 65000
+                                      ? '${bestServer.urlTestDelay} ms'
+                                      : '--',
+                                  style: const TextStyle(color: Color(0xFF45E6A0), fontWeight: FontWeight.w800, fontSize: 15),
+                                ),
+                                const SizedBox(width: 10),
+                                Icon(
+                                  group.selected == bestServer.tag ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
+                                  color: const Color(0xFF18DFFF),
+                                  size: 25,
+                                ),
+                              ],
+                            ),
+                            onTap: () async => await ref.read(proxiesOverviewNotifierProvider.notifier).changeProxy(group.tag, bestServer.tag),
+                          ),
+                        )
+                      else
+                        const Text('Best Server option is not available in this subscription.', style: TextStyle(color: Color(0xFF9BC8DD))),
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(4, 24, 4, 10),
+                        child: Text(
+                          'ORIGINAL SERVERS',
+                          style: TextStyle(color: Color(0xFF18DFFF), fontSize: 13, fontWeight: FontWeight.w800, letterSpacing: 1.3),
                         ),
-                      );
-                    },
+                      ),
+                      if (originalServers.isEmpty)
+                        const Padding(
+                          padding: EdgeInsets.all(12),
+                          child: Text('No individual servers found.', style: TextStyle(color: Color(0xFF9BC8DD))),
+                        )
+                      else
+                        for (final proxy in originalServers)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 10),
+                            child: Container(
+                              decoration: serverCardDecoration(group.selected == proxy.tag),
+                              clipBehavior: Clip.antiAlias,
+                              child: ProxyTile(
+                                proxy,
+                                key: ValueKey(proxy.tag),
+                                selected: group.selected == proxy.tag,
+                                onTap: () async => await ref.read(proxiesOverviewNotifierProvider.notifier).changeProxy(group.tag, proxy.tag),
+                              ),
+                            ),
+                          ),
+                    ],
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
