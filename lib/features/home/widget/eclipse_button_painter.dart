@@ -154,7 +154,7 @@ class EclipseButtonPainter extends CustomPainter {
     final ringRect = Rect.fromCircle(center: center, radius: ringRadius);
     final connecting = f.look == EclipseLook.starting || f.look == EclipseLook.waiting;
     final baseColor = switch (f.look) {
-      EclipseLook.connected => const Color(0xFF35FF65),
+      EclipseLook.connected => f.color,
       EclipseLook.starting || EclipseLook.waiting || EclipseLook.stopping => const Color(0xFFFFC629),
       EclipseLook.error => const Color(0xFFFF4568),
       EclipseLook.idle => const Color(0xFF12DFFF),
