@@ -14,6 +14,7 @@ import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/proxy/active/ip_widget.dart';
+import 'package:hiddify/features/proxy/overview/proxies_overview_page.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/connection/model/connection_status.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
@@ -200,7 +201,7 @@ class HomePage extends HookConsumerWidget {
           ],
         ),
         bottomNavigationBar: _HlpBottomNavigation(
-          onServers: () => ref.read(bottomSheetsNotifierProvider.notifier).showProxiesOverview(),
+          onServers: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProxiesOverviewPage())),
           onSettings: () => context.goNamed('settings'),
         ),
       ),
