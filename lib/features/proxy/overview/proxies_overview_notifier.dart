@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:dartx/dartx.dart';
@@ -9,6 +10,7 @@ import 'package:hiddify/core/notification/in_app_notification_controller.dart';
 import 'package:hiddify/core/preferences/preferences_provider.dart';
 import 'package:hiddify/core/utils/preferences_utils.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
+import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/proxy/data/proxy_data_providers.dart';
 import 'package:hiddify/features/proxy/widget/upload_speed.dart';
 import 'package:hiddify/features/settings/data/config_option_repository.dart';
@@ -94,6 +96,17 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
   Stream<OutboundGroup?> build() {
     ref.disposeDelay(const Duration(seconds: 15));
     final serviceRunning = ref.watch(serviceRunningProvider);
+    final activeProfile = ref.watch(activeProfileProvider).valueOrNull;
+    final cacheKey = activeProfile == null ? null : 'proxies_outbound_cache_v1_${activeProfile.id}';
+    final prefs = ref.read(sharedPreferencesProvider).requireValue;
+    OutboundGroup? cachedGroup;
+    if (cacheKey != null) {
+      final cached = prefs.getString(cacheKey);
+      if (cached != null) {
+        try { cachedGroup = OutboundGroup.fromBuffer(base64Decode(cached)); }
+        catch (error) { loggy.warning('discarding invalid cached proxy list', error); }
+      }
+    }
     // Set up again when the app comes back from the background, on a new gRPC
     // channel; the stream below lives on the old one.
     ref.watch(coreRestartSignalProvider);
@@ -121,8 +134,13 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
             return null;
           }, (group) => group),
         )
-        .startWith(null)
-        .doOnData((_) => _resubscribeDelay = _minResubscribeDelay)
+        .startWith(cachedGroup)
+        .doOnData((group) {
+          _resubscribeDelay = _minResubscribeDelay;
+          if (cacheKey != null && group != null && group.items.isNotEmpty) {
+            unawaited(prefs.setString(cacheKey, base64Encode(group.writeToBuffer())));
+          }
+        })
         .doOnDone(() {
           // gRPC ends the stream when its connection drops, e.g. once iOS suspends the app.
           // While reopening keeps failing the wait doubles, as for the active proxy.
