@@ -64,13 +64,13 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                       .toList();
                   final resting = group.items.where((e) => e.resting && !e.isGroup).toList();
                   final listed = inUse.length;
-                  var bestServerName = 'No server selected';
-                  for (final item in group.items) {
-                    if (item.tag == group.selected) {
-                      bestServerName = item.nameWithDetour;
-                      break;
-                    }
-                  }
+                  // Resolve selector groups (e.g. lowest/balance) to the real outbound
+                  // chosen inside that group. The main proxy group can select "lowest", but
+                  // showing that selector tag is not the actual server name.
+                  final activeServer = ref.watch(activeProxyCardProvider)?.server;
+                  final bestServerName = activeServer?.nameWithDetour ??
+                      group.items.where((item) => item.tag == group.selected).firstOrNull?.nameWithDetour ??
+                      'Finding best server…';
 
                   Widget serverCard(OutboundInfo proxy) {
                     final selected = group.selected == proxy.tag;
