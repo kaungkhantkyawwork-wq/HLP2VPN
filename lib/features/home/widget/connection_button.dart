@@ -307,26 +307,6 @@ class _ConnectionButton extends HookWidget {
     double now() => clock.elapsedMicroseconds / 1e6;
     // keyboard / TV remote focus: a ring round the button, so the face and its logo stay visible
     final focused = useState(false);
-    final connectedAt = useRef<DateTime?>(null);
-    final connectionTick = useState(0);
-    useEffect(() {
-      if (look != _Look.connected) {
-        connectedAt.value = null;
-        connectionTick.value = 0;
-        return null;
-      }
-      connectedAt.value ??= DateTime.now();
-      final timer = Timer.periodic(const Duration(seconds: 1), (_) => connectionTick.value++);
-      return timer.cancel;
-    }, [look]);
-    String connectionElapsed() {
-      final elapsed = connectedAt.value == null ? Duration.zero : DateTime.now().difference(connectedAt.value!);
-      String two(int n) => n.toString().padLeft(2, '0');
-      return '${two(elapsed.inHours)}:${two(elapsed.inMinutes.remainder(60))}:${two(elapsed.inSeconds.remainder(60))}';
-    }
-    // Keep the connection timer visible inside the button, as in the supplied reference.
-    connectionTick.value;
-
     // when the look last changed, and from what
     final eclipseLook = _eclipseLook;
     final change = useRef((
@@ -546,10 +526,7 @@ class _ConnectionButton extends HookWidget {
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
                                 ),
-                                if (look == _Look.connected) ...[
-                                  const SizedBox(height: 5),
-                                  Text(connectionElapsed(), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
-                                ] else if (look == _Look.connecting || look == _Look.waiting) ...[
+                                if (look == _Look.connecting || look == _Look.waiting) ...[
                                   const SizedBox(height: 4),
                                   const Text('Please wait', style: TextStyle(color: Color(0xFFD7F5FF), fontSize: 12)),
                                 ],
