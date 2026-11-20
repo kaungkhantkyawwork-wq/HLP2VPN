@@ -132,51 +132,11 @@ class HomePage extends HookConsumerWidget {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              _NeonCard(
-                                child: Row(
-                                  children: [
-                                    if (activeProfile.valueOrNull?.name != 'HLP2VPN Servers')
-                                      IconButton(
-                                        tooltip: 'Refresh subscription',
-                                        onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
-                                        icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
-                                      ),
-                                    Container(width: 1, height: 44, color: const Color(0x5538CFFF)),
-                                    const Gap(12),
-                                    Expanded(
-                                      child: InkWell(
-                                        borderRadius: BorderRadius.circular(12),
-                                        onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 12),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              Text(
-                                                activeProfile.when(
-                                                  data: (profile) => profile?.name ?? 'Choose Subscription',
-                                                  loading: () => 'Loading Subscription…',
-                                                  error: (_, __) => 'Subscription unavailable',
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
-                                              ),
-                                              const Gap(3),
-
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    IconButton(
-                                      tooltip: 'Choose subscription',
-                                      onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
-                                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _cyan, size: 28),
-                                    ),
-                                  ],
-                                ),
+                              _CyberServerSelector(
+                                onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+                                onRefresh: activeProfile.valueOrNull?.name != 'HLP2VPN Servers'
+                                    ? () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger()
+                                    : null,
                               ),
                               // Give the subscription selector and the main power dial
                               // more breathing room so they read as two premium sections.
@@ -206,6 +166,212 @@ class HomePage extends HookConsumerWidget {
       ),
     );
   }
+}
+
+class _CyberServerSelector extends StatelessWidget {
+  const _CyberServerSelector({required this.onTap, this.onRefresh});
+
+  final VoidCallback onTap;
+  final VoidCallback? onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 92,
+      width: double.infinity,
+      child: CustomPaint(
+        painter: const _CyberSelectorPainter(),
+        child: ClipPath(
+          clipper: const _CyberSelectorClipper(),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              splashColor: const Color(0x3323DFFF),
+              highlightColor: const Color(0x1A23DFFF),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 13),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 66,
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          const Icon(Icons.dns_rounded, color: Color(0xFF20E7FF), size: 43),
+                          if (onRefresh != null)
+                            Positioned(
+                              right: 0,
+                              bottom: 0,
+                              child: Material(
+                                color: const Color(0xFF082B4A),
+                                shape: const CircleBorder(),
+                                child: InkWell(
+                                  customBorder: const CircleBorder(),
+                                  onTap: onRefresh,
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(4),
+                                    child: Icon(Icons.refresh_rounded, color: Color(0xFF8BEFFF), size: 15),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Container(width: 1.2, height: 48, color: const Color(0x6653DFFF)),
+                    const Gap(16),
+                    const Expanded(
+                      child: Text(
+                        'HLP2VPN Servers',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: .15,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    ClipPath(
+                      clipper: const _HexDropdownClipper(),
+                      child: Container(
+                        width: 58,
+                        height: 54,
+                        decoration: BoxDecoration(
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [Color(0xFF10527B), Color(0xFF06213F)],
+                          ),
+                          border: Border.all(color: const Color(0xFF19DFFF), width: 1.4),
+                          boxShadow: const [BoxShadow(color: Color(0xAA00CFFF), blurRadius: 13)],
+                        ),
+                        child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFFBDF8FF), size: 32),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CyberSelectorClipper extends CustomClipper<Path> {
+  const _CyberSelectorClipper();
+
+  @override
+  Path getClip(Size size) {
+    final w = size.width;
+    final h = size.height;
+    return Path()
+      ..moveTo(w * .075, h * .06)
+      ..lineTo(w * .235, h * .06)
+      ..lineTo(w * .275, h * .15)
+      ..lineTo(w * .725, h * .15)
+      ..lineTo(w * .765, h * .06)
+      ..lineTo(w * .925, h * .06)
+      ..lineTo(w * .985, h * .34)
+      ..lineTo(w * .985, h * .66)
+      ..lineTo(w * .925, h * .94)
+      ..lineTo(w * .765, h * .94)
+      ..lineTo(w * .725, h * .85)
+      ..lineTo(w * .275, h * .85)
+      ..lineTo(w * .235, h * .94)
+      ..lineTo(w * .075, h * .94)
+      ..lineTo(w * .015, h * .66)
+      ..lineTo(w * .015, h * .34)
+      ..close();
+  }
+
+  @override
+  bool shouldReclip(covariant _CyberSelectorClipper oldClipper) => false;
+}
+
+class _HexDropdownClipper extends CustomClipper<Path> {
+  const _HexDropdownClipper();
+
+  @override
+  Path getClip(Size size) => Path()
+    ..moveTo(size.width * .25, 0)
+    ..lineTo(size.width * .75, 0)
+    ..lineTo(size.width, size.height * .5)
+    ..lineTo(size.width * .75, size.height)
+    ..lineTo(size.width * .25, size.height)
+    ..lineTo(0, size.height * .5)
+    ..close();
+
+  @override
+  bool shouldReclip(covariant _HexDropdownClipper oldClipper) => false;
+}
+
+class _CyberSelectorPainter extends CustomPainter {
+  const _CyberSelectorPainter();
+
+  Path _path(Size size) {
+    final w = size.width;
+    final h = size.height;
+    return Path()
+      ..moveTo(w * .075, h * .06)
+      ..lineTo(w * .235, h * .06)
+      ..lineTo(w * .275, h * .15)
+      ..lineTo(w * .725, h * .15)
+      ..lineTo(w * .765, h * .06)
+      ..lineTo(w * .925, h * .06)
+      ..lineTo(w * .985, h * .34)
+      ..lineTo(w * .985, h * .66)
+      ..lineTo(w * .925, h * .94)
+      ..lineTo(w * .765, h * .94)
+      ..lineTo(w * .725, h * .85)
+      ..lineTo(w * .275, h * .85)
+      ..lineTo(w * .235, h * .94)
+      ..lineTo(w * .075, h * .94)
+      ..lineTo(w * .015, h * .66)
+      ..lineTo(w * .015, h * .34)
+      ..close();
+  }
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final path = _path(size);
+    final rect = Offset.zero & size;
+    canvas.drawPath(path, Paint()
+      ..color = const Color(0xAA00BFFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 7
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 13));
+    canvas.drawPath(path, Paint()
+      ..shader = const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFF0B4774), Color(0xFF03162F), Color(0xFF082B4D)],
+      ).createShader(rect));
+    canvas.drawPath(path, Paint()
+      ..color = const Color(0xFF21DFFF)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.1);
+    final accent = Paint()
+      ..color = const Color(0xFF20E8FF)
+      ..strokeWidth = 3
+      ..strokeCap = StrokeCap.round;
+    canvas.drawLine(Offset(size.width * .43, 2), Offset(size.width * .57, 2), accent);
+    canvas.drawLine(Offset(size.width * .43, size.height - 2), Offset(size.width * .57, size.height - 2), accent);
+    for (var i = 0; i < 4; i++) {
+      final xLeft = size.width * (.045 + i * .012);
+      final xRight = size.width * (.955 - i * .012);
+      canvas.drawLine(Offset(xLeft, size.height * (.48 + i * .055)), Offset(xLeft + 5, size.height * (.53 + i * .055)), accent);
+      canvas.drawLine(Offset(xRight, size.height * (.48 + i * .055)), Offset(xRight - 5, size.height * (.53 + i * .055)), accent);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _CyberSelectorPainter oldDelegate) => false;
 }
 
 class _PremiumHomeBackdrop extends StatelessWidget {
