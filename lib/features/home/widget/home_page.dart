@@ -19,6 +19,8 @@ import 'package:hiddify/features/connection/model/connection_status.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/stats/notifier/stats_notifier.dart';
 import 'package:hiddify/features/proxy/widget/upload_speed.dart';
+import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
+import 'package:hiddify/features/profile/notifier/profiles_update_notifier.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
@@ -33,6 +35,7 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final activeProfile = ref.watch(activeProfileProvider);
     final darkTheme = theme.copyWith(
       brightness: Brightness.dark,
       // ProfileTile and other upstream widgets inherit this text palette. The home
@@ -123,53 +126,50 @@ class HomePage extends HookConsumerWidget {
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
                             _NeonCard(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  borderRadius: BorderRadius.circular(22),
-                                  onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProxiesOverview(),
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                          width: 42,
-                                          height: 42,
-                                          decoration: BoxDecoration(
-                                            shape: BoxShape.circle,
-                                            color: const Color(0xFF08D9FF).withValues(alpha: .15),
-                                            border: Border.all(color: const Color(0xFF08D9FF), width: 1.2),
-                                            boxShadow: const [BoxShadow(color: Color(0x6608BFFF), blurRadius: 12)],
-                                          ),
-                                          child: const Icon(Icons.bolt_rounded, color: Color(0xFF08D9FF), size: 25),
-                                        ),
-                                        const Gap(12),
-                                        Expanded(
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const Text(
-                                                'HLP2VPN Servers',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    tooltip: 'Refresh subscription',
+                                    onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
+                                    icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
+                                  ),
+                                  Container(width: 1, height: 44, color: const Color(0x5538CFFF)),
+                                  const Gap(12),
+                                  Expanded(
+                                    child: InkWell(
+                                      borderRadius: BorderRadius.circular(12),
+                                      onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 12),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              activeProfile.when(
+                                                data: (profile) => profile?.name ?? 'Choose Subscription',
+                                                loading: () => 'Loading Subscription…',
+                                                error: (_, __) => 'Subscription unavailable',
                                               ),
-                                              const Gap(3),
-                                              const Text(
-                                                'Auto • High Speed',
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12),
-                                              ),
-                                            ],
-                                          ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                                            ),
+                                            const Gap(3),
+                                            const Text('Subscription Profile',
+                                              maxLines: 1, overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12)),
+                                          ],
                                         ),
-                                        const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF08D9FF), size: 28),
-                                      ],
+                                      ),
                                     ),
                                   ),
-                                ),
+                                  IconButton(
+                                    tooltip: 'Choose subscription',
+                                    onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+                                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _cyan, size: 28),
+                                  ),
+                                ],
                               ),
                             ),
                             const Gap(22),
