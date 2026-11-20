@@ -10,6 +10,7 @@ import 'package:hiddify/features/connection/widget/connection_health_sheet.dart'
 import 'package:hiddify/features/log/overview/logs_modals.dart';
 import 'package:hiddify/features/profile/add/add_profile_modal.dart';
 import 'package:hiddify/features/profile/overview/profiles_modal.dart';
+import 'package:hiddify/features/proxy/overview/proxies_modal.dart';
 import 'package:hiddify/utils/link_parsers.dart';
 
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -74,6 +75,9 @@ class BottomSheetsNotifier extends _$BottomSheetsNotifier {
   }
 
   Future<void> showProfilesOverview() async => await _show(isScrollControlled: true, child: const ProfilesModal());
+
+  /// Lists the individual outbound servers belonging to the active subscription.
+  Future<void> showProxiesOverview() async => await _show(isScrollControlled: true, child: const ProxiesModal());
 
   Future<void> showQuickSettings() async => await _show(isScrollControlled: false, child: const QuickSettingsModal());
 
