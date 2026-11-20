@@ -118,73 +118,81 @@ class HomePage extends HookConsumerWidget {
               child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 620),
-                  child: CustomScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    slivers: [
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(16, 10, 16, 108),
-                        sliver: SliverList(
-                          delegate: SliverChildListDelegate([
-                            _NeonCard(
-                              child: Row(
-                                children: [
-                                  IconButton(
-                                    tooltip: 'Refresh subscription',
-                                    onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
-                                    icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
-                                  ),
-                                  Container(width: 1, height: 44, color: const Color(0x5538CFFF)),
-                                  const Gap(12),
-                                  Expanded(
-                                    child: InkWell(
-                                      borderRadius: BorderRadius.circular(12),
-                                      onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 12),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              activeProfile.when(
-                                                data: (profile) => profile?.name ?? 'Choose Subscription',
-                                                loading: () => 'Loading Subscription…',
-                                                error: (_, __) => 'Subscription unavailable',
+                  child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: constraints.maxHeight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.center,
+                      child: SizedBox(
+                        width: constraints.maxWidth.clamp(0, 620),
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              _NeonCard(
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                      tooltip: 'Refresh subscription',
+                                      onPressed: () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger(),
+                                      icon: const Icon(Icons.sync_rounded, color: _cyan, size: 27),
+                                    ),
+                                    Container(width: 1, height: 44, color: const Color(0x5538CFFF)),
+                                    const Gap(12),
+                                    Expanded(
+                                      child: InkWell(
+                                        borderRadius: BorderRadius.circular(12),
+                                        onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+                                        child: Padding(
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                activeProfile.when(
+                                                  data: (profile) => profile?.name ?? 'Choose Subscription',
+                                                  loading: () => 'Loading Subscription…',
+                                                  error: (_, __) => 'Subscription unavailable',
+                                                ),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                                               ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
-                                              style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
-                                            ),
-                                            const Gap(3),
-                                            const Text('Subscription Profile',
-                                              maxLines: 1, overflow: TextOverflow.ellipsis,
-                                              style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12)),
-                                          ],
+                                              const Gap(3),
+                                              const Text('Subscription Profile',
+                                                maxLines: 1, overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12)),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Choose subscription',
-                                    onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
-                                    icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _cyan, size: 28),
-                                  ),
-                                ],
+                                    IconButton(
+                                      tooltip: 'Choose subscription',
+                                      onPressed: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+                                      icon: const Icon(Icons.keyboard_arrow_down_rounded, color: _cyan, size: 28),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const Gap(22),
-                            const Center(child: ConnectionButton()),
-                            const Gap(22),
-                            const _LiveNetworkPanel(),
-                            const Gap(12),
-                            const _DataServerPanel(),
-
-                          ]),
+                              const Gap(12),
+                              const Center(child: ConnectionButton()),
+                              const Gap(12),
+                              const _LiveNetworkPanel(),
+                              const Gap(10),
+                              const _DataServerPanel(),
+                            ],
+                          ),
                         ),
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           ],
