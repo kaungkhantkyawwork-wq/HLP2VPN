@@ -510,8 +510,7 @@ class HiddifyCoreService with InfraLogger {
       // The first sample is requested immediately; subsequent samples arrive once a second.
       return Stream<int>.periodic(const Duration(seconds: 1), (tick) => tick)
           .startWith(-1)
-          .asyncMap((_) => core.bgClient.getSystemInfo(Empty()))
-          .cancelOnUnsubscribe;
+          .asyncMap((_) => core.bgClient.getSystemInfo(Empty()));
     } catch (e) {
       loggy.error("error watching stats: $e");
       rethrow;
