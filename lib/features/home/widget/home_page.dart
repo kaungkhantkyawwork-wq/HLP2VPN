@@ -185,75 +185,77 @@ class _CyberServerSelector extends StatelessWidget {
           clipper: const _CyberSelectorClipper(),
           child: Material(
             color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              splashColor: const Color(0x3323DFFF),
-              highlightColor: const Color(0x1A23DFFF),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 13),
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: 66,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          const Icon(Icons.dns_rounded, color: Color(0xFF20E7FF), size: 43),
-                          if (onRefresh != null)
-                            Positioned(
-                              right: 0,
-                              bottom: 0,
-                              child: Material(
-                                color: const Color(0xFF082B4A),
-                                shape: const CircleBorder(),
-                                child: InkWell(
-                                  customBorder: const CircleBorder(),
-                                  onTap: onRefresh,
-                                  child: const Padding(
-                                    padding: EdgeInsets.all(4),
-                                    child: Icon(Icons.refresh_rounded, color: Color(0xFF8BEFFF), size: 15),
-                                  ),
-                                ),
-                              ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 17, vertical: 13),
+              child: Row(
+                children: [
+                  // Decorative server icon only: intentionally has no tap handler.
+                  const SizedBox(
+                    width: 66,
+                    child: Center(
+                      child: Icon(Icons.dns_rounded, color: Color(0xFF20E7FF), size: 43),
+                    ),
+                  ),
+                  Container(width: 1.2, height: 48, color: const Color(0x6653DFFF)),
+                  const Gap(16),
+                  Expanded(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: onTap,
+                        borderRadius: BorderRadius.circular(8),
+                        splashColor: const Color(0x3323DFFF),
+                        highlightColor: const Color(0x1A23DFFF),
+                        child: const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                          child: Text(
+                            'HLP2VPN Servers',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 17,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: .15,
                             ),
-                        ],
-                      ),
-                    ),
-                    Container(width: 1.2, height: 48, color: const Color(0x6653DFFF)),
-                    const Gap(16),
-                    const Expanded(
-                      child: Text(
-                        'HLP2VPN Servers',
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 17,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: .15,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    ClipPath(
-                      clipper: const _HexDropdownClipper(),
-                      child: Container(
-                        width: 58,
-                        height: 54,
-                        decoration: BoxDecoration(
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [Color(0xFF10527B), Color(0xFF06213F)],
                           ),
-                          border: Border.all(color: const Color(0xFF19DFFF), width: 1.4),
-                          boxShadow: const [BoxShadow(color: Color(0xAA00CFFF), blurRadius: 13)],
                         ),
-                        child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFFBDF8FF), size: 32),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  if (onRefresh != null)
+                    IconButton(
+                      tooltip: 'Refresh subscription',
+                      onPressed: onRefresh,
+                      icon: const Icon(Icons.refresh_rounded, color: Color(0xFF8BEFFF), size: 20),
+                    ),
+                  const SizedBox(width: 4),
+                  Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onTap,
+                      customBorder: const CircleBorder(),
+                      splashColor: const Color(0x3323DFFF),
+                      child: ClipPath(
+                        clipper: const _HexDropdownClipper(),
+                        child: Container(
+                          width: 58,
+                          height: 54,
+                          decoration: BoxDecoration(
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [Color(0xFF10527B), Color(0xFF06213F)],
+                            ),
+                            border: Border.all(color: const Color(0xFF19DFFF), width: 1.4),
+                            boxShadow: const [BoxShadow(color: Color(0xAA00CFFF), blurRadius: 13)],
+                          ),
+                          child: const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFFBDF8FF), size: 32),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
