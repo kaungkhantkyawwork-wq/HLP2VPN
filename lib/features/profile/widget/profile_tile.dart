@@ -54,7 +54,7 @@ class ProfileTile extends HookConsumerWidget {
     void handleTap() {
       if (isMain) {
         if (Breakpoint(context).isMobile()) {
-          ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview();
+          ref.read(bottomSheetsNotifierProvider.notifier).showProxiesOverview();
         } else {
           context.goNamed('profiles');
         }
