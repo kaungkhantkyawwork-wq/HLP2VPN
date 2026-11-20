@@ -279,13 +279,6 @@ class SettingsPage extends HookConsumerWidget {
               const Gap(12),
               _SettingsGroupLabel(title: 'TOOLS & INFORMATION'),
               SettingsSection(
-                title: t.pages.logs.title,
-                icon: Icons.article_rounded,
-                subtitle: const Text('Connection logs and diagnostics'),
-                accent: const Color(0xFF31C98A),
-                namedLocation: context.namedLocation('logs'),
-              ),
-              SettingsSection(
                 title: t.pages.about.title,
                 icon: Icons.info_outline_rounded,
                 subtitle: const Text('Version, updates and app information'),
