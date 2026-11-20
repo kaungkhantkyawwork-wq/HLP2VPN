@@ -84,7 +84,7 @@ class _SplashState extends State<_Splash> with SingleTickerProviderStateMixin {
                 ),
               ),
               Positioned(
-                bottom: constraints.maxHeight * .035,
+                bottom: constraints.maxHeight * .10,
                 child: SizedBox(
                   width: 42,
                   height: 42,
