@@ -64,6 +64,13 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                       .toList();
                   final resting = group.items.where((e) => e.resting && !e.isGroup).toList();
                   final listed = inUse.length;
+                  var bestServerName = 'No server selected';
+                  for (final item in group.items) {
+                    if (item.tag == group.selected) {
+                      bestServerName = item.nameWithDetour;
+                      break;
+                    }
+                  }
 
                   Widget serverCard(OutboundInfo proxy) {
                     final selected = group.selected == proxy.tag;
@@ -149,13 +156,18 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                                       child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 27),
                                     ),
                                     const Gap(14),
-                                    const Expanded(
+                                    Expanded(
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text('Best Server', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
-                                          SizedBox(height: 3),
-                                          Text('AUTO  •  Lowest ping', style: TextStyle(color: Color(0xFFB8EFFF), fontSize: 12, fontWeight: FontWeight.w600)),
+                                          const Text('Best Server', style: TextStyle(color: Colors.white, fontSize: 17, fontWeight: FontWeight.w800)),
+                                          const SizedBox(height: 3),
+                                          Text(
+                                            bestServerName,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(color: Color(0xFFB8EFFF), fontSize: 12, fontWeight: FontWeight.w600),
+                                          ),
                                         ],
                                       ),
                                     ),
