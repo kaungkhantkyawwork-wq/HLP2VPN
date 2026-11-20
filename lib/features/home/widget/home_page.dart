@@ -166,9 +166,7 @@ class HomePage extends HookConsumerWidget {
                                                 style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                                               ),
                                               const Gap(3),
-                                              const Text('Subscription Profile',
-                                                maxLines: 1, overflow: TextOverflow.ellipsis,
-                                                style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12)),
+
                                             ],
                                           ),
                                         ),
