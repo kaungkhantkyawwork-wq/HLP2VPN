@@ -444,25 +444,11 @@ class _ConnectionButton extends HookWidget {
                                 }
                                 return CustomPaint(
                                   isComplex: true,
-                                  // a light that stands still is kept as it was drawn
                                   willChange: moving,
-                                  painter: EclipseButtonPainter(
-                                    frame: EclipseFrame(
-                                      look: c.look,
-                                      previous: c.previous,
-                                      since: still ? 10 : at - c.at,
-                                      time: light.time,
-                                      color: c.color,
-                                      previousColor: c.previousColor,
-                                    ),
-                                    radius: _size / 2,
-                                    // in steps, so it repaints only when the traffic changes a lot
-                                    traffic: still || flowStill ? _stepped(target) : light.traffic,
-                                    dark: theme.brightness == Brightness.dark,
-                                    drawLogo: false,
-                                    logoOpacity: look == _Look.loading ? .38 : 1,
-                                    pixelRatio: MediaQuery.devicePixelRatioOf(context),
-                                    simple: still || flowStill,
+                                  painter: _PremiumConnectDialPainter(
+                                    look: c.look,
+                                    color: c.color,
+                                    time: light.time,
                                   ),
                                 );
                               },
@@ -800,4 +786,185 @@ class _ChainBadge extends StatelessWidget {
       ),
     );
   }
+}
+
+
+/// Premium glass dial used by the HLP2VPN home screen. The tunnel state remains owned by
+/// ConnectionButton; this painter only renders the visual treatment.
+class _PremiumConnectDialPainter extends CustomPainter {
+  const _PremiumConnectDialPainter({
+    required this.look,
+    required this.color,
+    required this.time,
+  });
+
+  final EclipseLook look;
+  final Color color;
+  final double time;
+
+  bool get _connecting => look == EclipseLook.starting || look == EclipseLook.waiting;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = size.center(Offset.zero);
+    final radius = size.shortestSide * .445;
+    final outer = Rect.fromCircle(center: center, radius: radius);
+    final stateColor = switch (look) {
+      EclipseLook.idle => const Color(0xFF32DFFF),
+      EclipseLook.starting || EclipseLook.waiting || EclipseLook.stopping => const Color(0xFFFFD83D),
+      EclipseLook.connected => const Color(0xFF45FF8B),
+      EclipseLook.error => const Color(0xFFFF354F),
+    };
+
+    // Broad, saturated state glow behind the glass dial.
+    canvas.drawCircle(
+      center,
+      radius + 1,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 12
+        ..color = stateColor.withValues(alpha: .55)
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 18),
+    );
+
+    // Premium multi-tone outer ring.
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 7
+        ..shader = const SweepGradient(
+          colors: [
+            Color(0xFF12EFFF),
+            Color(0xFF168BFF),
+            Color(0xFF8A45FF),
+            Color(0xFFE34DFF),
+            Color(0xFF12EFFF),
+          ],
+        ).createShader(outer),
+    );
+
+    // Inner hairline and fine radial ticks.
+    canvas.drawCircle(
+      center,
+      radius - 8,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.4
+        ..color = stateColor.withValues(alpha: .92),
+    );
+    final tickPaint = Paint()
+      ..color = const Color(0xFF35E8FF).withValues(alpha: .88)
+      ..strokeWidth = 2.1
+      ..strokeCap = StrokeCap.round;
+    for (var i = 0; i < 72; i++) {
+      final angle = (math.pi * 2 * i / 72) - math.pi / 2;
+      final major = i % 6 == 0;
+      final r1 = radius - (major ? 17 : 14);
+      final r2 = radius - 10;
+      canvas.drawLine(
+        Offset(center.dx + math.cos(angle) * r1, center.dy + math.sin(angle) * r1),
+        Offset(center.dx + math.cos(angle) * r2, center.dy + math.sin(angle) * r2),
+        tickPaint..strokeWidth = major ? 2.8 : 1.7,
+      );
+    }
+
+    // The face is a deep blue glass disc with a soft upper-left reflection.
+    final faceRadius = radius - 19;
+    final face = Rect.fromCircle(center: center, radius: faceRadius);
+    canvas.drawCircle(
+      center,
+      faceRadius,
+      Paint()
+        ..shader = const RadialGradient(
+          center: Alignment(-.42, -.62),
+          radius: 1.18,
+          colors: [Color(0xFF164B7D), Color(0xFF082747), Color(0xFF031326)],
+          stops: [0, .48, 1],
+        ).createShader(face),
+    );
+
+    // A subtle liquid-glass wave at the bottom of the dial.
+    canvas.save();
+    canvas.clipPath(Path()..addOval(face));
+    final wave = Path()
+      ..moveTo(center.dx - faceRadius, center.dy + faceRadius * .12)
+      ..cubicTo(
+        center.dx - faceRadius * .45, center.dy + faceRadius * .58,
+        center.dx + faceRadius * .12, center.dy + faceRadius * .02,
+        center.dx + faceRadius, center.dy + faceRadius * .34,
+      )
+      ..lineTo(center.dx + faceRadius, center.dy + faceRadius)
+      ..lineTo(center.dx - faceRadius, center.dy + faceRadius)
+      ..close();
+    canvas.drawPath(
+      wave,
+      Paint()
+        ..shader = const LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0x0030DFFF), Color(0xAA08BFFF), Color(0xAA8D4DFF)],
+        ).createShader(face),
+    );
+    final reflection = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2.2
+      ..color = const Color(0xFF62F5FF).withValues(alpha: .9)
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3);
+    canvas.drawPath(wave, reflection);
+    canvas.restore();
+
+    // Fine glass rim and highlight.
+    canvas.drawCircle(
+      center,
+      faceRadius,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2.2
+        ..color = const Color(0xFF64DFFF).withValues(alpha: .78),
+    );
+    canvas.drawArc(
+      outer,
+      -math.pi * .88,
+      math.pi * .55,
+      false,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.2
+        ..strokeCap = StrokeCap.round
+        ..color = Colors.white.withValues(alpha: .56),
+    );
+
+    // Only the connecting/waiting state gets a moving bright sweep.
+    if (_connecting) {
+      final start = (time * 1.75) % (math.pi * 2) - math.pi / 2;
+      canvas.drawArc(
+        outer,
+        start,
+        1.05,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 8
+          ..strokeCap = StrokeCap.round
+          ..color = Colors.white
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
+      );
+    } else {
+      // Keep the other states still, but make the whole state ring vivid.
+      canvas.drawCircle(
+        center,
+        radius + 5,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = stateColor.withValues(alpha: .8),
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _PremiumConnectDialPainter oldDelegate) =>
+      oldDelegate.look != look || oldDelegate.color != color || oldDelegate.time != time;
 }
