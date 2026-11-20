@@ -67,10 +67,10 @@ class BottomSheetsNotifier extends _$BottomSheetsNotifier {
             message: t.dialogs.confirmation.addProfileByDeepLinkWarning.message(host: _deepLinkHost(url)),
           );
       if (isConfirmed) {
-        await _show(isScrollControlled: true, child: AddProfileModal(url: url));
+        await _show(isScrollControlled: true, child: _HlpAddProfileTheme(child: AddProfileModal(url: url)));
       }
     } else {
-      await _show(isScrollControlled: true, child: AddProfileModal(url: url));
+      await _show(isScrollControlled: true, child: _HlpAddProfileTheme(child: AddProfileModal(url: url)));
     }
   }
 
@@ -96,4 +96,71 @@ class BottomSheetsNotifier extends _$BottomSheetsNotifier {
     isScrollControlled: true,
     child: AppListShareModal(added: added, removed: removed, apps: apps),
   );
+}
+
+
+/// HLP2VPN dark neon styling for the add/import profile sheet only.
+/// Keeps the upstream import actions and state unchanged.
+class _HlpAddProfileTheme extends StatelessWidget {
+  const _HlpAddProfileTheme({required this.child});
+
+  final Widget child;
+
+  static const _navy = Color(0xFF061426);
+  static const _panel = Color(0xFF0A2745);
+  static const _cyan = Color(0xFF12D9FF);
+  static const _blue = Color(0xFF168BFF);
+  static const _muted = Color(0xFFB8CBE0);
+
+  @override
+  Widget build(BuildContext context) {
+    final base = Theme.of(context);
+    final dark = base.copyWith(
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: _navy,
+      canvasColor: _navy,
+      textTheme: base.textTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
+      primaryTextTheme: base.primaryTextTheme.apply(bodyColor: Colors.white, displayColor: Colors.white),
+      colorScheme: base.colorScheme.copyWith(
+        brightness: Brightness.dark,
+        primary: _cyan,
+        onPrimary: _navy,
+        secondary: _blue,
+        surface: _navy,
+        onSurface: Colors.white,
+        onSurfaceVariant: _muted,
+        outline: _blue,
+        outlineVariant: const Color(0xFF24618A),
+        surfaceContainerLowest: const Color(0xFF030C18),
+        surfaceContainerLow: _panel,
+        surfaceContainer: const Color(0xFF0C3155),
+        surfaceContainerHigh: const Color(0xFF103B62),
+        surfaceContainerHighest: const Color(0xFF164A70),
+      ),
+      iconTheme: const IconThemeData(color: _cyan),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? _cyan : _muted),
+        trackColor: WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? _blue.withValues(alpha: .55) : const Color(0xFF34465A)),
+        trackOutlineColor: WidgetStateProperty.all(_cyan.withValues(alpha: .65)),
+      ),
+      actionChipTheme: ActionChipThemeData(
+        backgroundColor: _panel,
+        side: const BorderSide(color: _blue),
+        labelStyle: const TextStyle(color: Colors.white),
+        iconTheme: const IconThemeData(color: _cyan),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: _blue,
+          foregroundColor: Colors.white,
+        ),
+      ),
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: _cyan),
+      dividerTheme: const DividerThemeData(color: Color(0x5530BFFF)),
+      dialogTheme: const DialogThemeData(backgroundColor: _panel, surfaceTintColor: Colors.transparent),
+    );
+    return Theme(data: dark, child: child);
+  }
 }
