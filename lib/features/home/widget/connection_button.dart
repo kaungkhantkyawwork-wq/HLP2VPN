@@ -133,7 +133,7 @@ class ConnectionButton extends HookConsumerWidget {
         _Look.noProxies => const Color.fromARGB(255, 185, 176, 103),
         _Look.failed => Colors.red,
         // the logo's own blue while the connection is on its way
-        _Look.connecting || _Look.waiting || _Look.hotReloading || _Look.disconnecting => const Color(0xFF455FE9),
+        _Look.connecting || _Look.waiting || _Look.hotReloading || _Look.disconnecting => const Color(0xFFFFC629),
         _ => buttonTheme.idleColor!,
       },
       image: switch (look) {
