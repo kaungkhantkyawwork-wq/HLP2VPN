@@ -797,7 +797,7 @@ class _PremiumConnectDialPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = size.center(Offset.zero);
-    final radius = size.shortestSide * .445;
+    final radius = size.shortestSide * .252;
     final outer = Rect.fromCircle(center: center, radius: radius);
     final stateColor = color;
 
