@@ -478,11 +478,7 @@ class _ConnectionButton extends HookWidget {
                                 Icon(
                                   Icons.power_settings_new_rounded,
                                   size: 64,
-                                  color: look == _Look.connected
-                                      ? const Color(0xFF45FF72)
-                                      : look == _Look.connecting || look == _Look.waiting
-                                          ? const Color(0xFFFFC928)
-                                          : const Color(0xFF18DFFF),
+                                  color: buttonColor,
                                   shadows: [
                                     Shadow(
                                       color: buttonColor.withValues(alpha: .9),
