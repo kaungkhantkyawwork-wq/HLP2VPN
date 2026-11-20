@@ -11,9 +11,9 @@ import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/router/bottom_sheets/bottom_sheets_notifier.dart';
 import 'package:hiddify/features/home/widget/connection_button.dart';
 import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
-import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
+import 'package:hiddify/features/proxy/active/ip_widget.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/connection/model/connection_status.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
@@ -33,8 +33,6 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
-    final activeProfile = ref.watch(activeProfileProvider);
-    final selectedOutbound = ref.watch(activeProxyNotifierProvider).valueOrNull;
     final darkTheme = theme.copyWith(
       brightness: Brightness.dark,
       // ProfileTile and other upstream widgets inherit this text palette. The home
@@ -151,21 +149,18 @@ class HomePage extends HookConsumerWidget {
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                              Text(
-                                                selectedOutbound?.name ?? 'Choose a server',
+                                              const Text(
+                                                'HLP2VPN Servers',
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                                                style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
                                               ),
                                               const Gap(3),
-                                              Text(
-                                                switch (activeProfile) {
-                                                  AsyncData(value: final profile?) => profile.name,
-                                                  _ => 'Tap to select from your subscription',
-                                                },
+                                              const Text(
+                                                'Auto • High Speed',
                                                 maxLines: 1,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(color: Color(0xFFB8D8F4), fontSize: 12),
+                                                style: TextStyle(color: Color(0xFFB8D8F4), fontSize: 12),
                                               ),
                                             ],
                                           ),
@@ -541,20 +536,18 @@ class _DataServerPanel extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(statsNotifierProvider).valueOrNull;
     final status = ref.watch(connectionNotifierProvider).valueOrNull;
-    final activeProxy = ref.watch(activeProxyNotifierProvider).valueOrNull;
+    // Resolve selector groups (for example "lowest") to the actual outbound.
+    final activeServer = ref.watch(activeProxyCardProvider)?.server;
     final connected = status is Connected;
     final connecting = status is Connecting || status is Waiting || status is HotReloading;
     final total = (stats?.downlinkTotal.toInt() ?? 0).size();
 
-    // The selected outbound is the actual server (e.g. TH-1 / SG-1), not the
-    // subscription/profile title such as "HLP2VPN Servers".
-    final serverName = activeProxy?.name ?? '--';
+    final serverName = activeServer?.name ?? '--';
     final serverLabel = connected
         ? 'Connected Server'
         : connecting
             ? 'Connecting to'
             : 'Selected Server';
-    final flag = _serverFlag(serverName);
 
     // Start the session clock only after the tunnel reaches Connected.
     // It stays fixed while disconnected and starts over on the next session.
@@ -608,7 +601,14 @@ class _DataServerPanel extends HookConsumerWidget {
                     color: const Color(0xFF19D9FF),
                     label: serverLabel,
                     value: serverName,
-                    leading: flag,
+                    leading: activeServer == null || activeServer.ipinfo.countryCode.isEmpty
+                        ? null
+                        : IPCountryFlag(
+                            countryCode: activeServer.ipinfo.countryCode,
+                            organization: activeServer.ipinfo.org,
+                            size: 28,
+                            radius: 6,
+                          ),
                   ),
                 ),
               ],
@@ -648,16 +648,6 @@ String _formatConnectionTime(Duration duration) {
   final seconds = duration.inSeconds.remainder(60);
   return '${two(hours)}:${two(minutes)}:${two(seconds)}';
 }
-
-String _serverFlag(String name) {
-  final match = RegExp(r'^([A-Za-z]{2})[-_ ]').firstMatch(name.trim());
-  if (match == null) return '';
-  final code = match.group(1)!.toUpperCase();
-  if (!RegExp(r'^[A-Z]{2}$'
-).hasMatch(code)) return '';
-  return String.fromCharCodes(code.codeUnits.map((unit) => 0x1F1E6 + unit - 0x41));
-}
-
 
 class _NetworkMetric extends StatelessWidget {
   const _NetworkMetric({
@@ -720,7 +710,7 @@ class _InfoMetric extends StatelessWidget {
   final Color color;
   final String label;
   final String value;
-  final String leading;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -748,8 +738,8 @@ class _InfoMetric extends StatelessWidget {
               const Gap(4),
               Row(
                 children: [
-                  if (leading.isNotEmpty) ...[
-                    Text(leading, style: const TextStyle(fontSize: 17)),
+                  if (leading != null) ...[
+                    leading!,
                     const Gap(5),
                   ],
                   Expanded(
