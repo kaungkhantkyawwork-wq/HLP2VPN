@@ -161,6 +161,6 @@ class _HlpAddProfileTheme extends StatelessWidget {
       dividerTheme: const DividerThemeData(color: Color(0x5530BFFF)),
       dialogTheme: const DialogThemeData(backgroundColor: _panel, surfaceTintColor: Colors.transparent),
     );
-    return Theme(data: dark, child: child);
+    return Theme(data: dark, child: Material(color: _navy, child: child));
   }
 }
