@@ -332,13 +332,13 @@ class _NeonCard extends StatelessWidget {
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0xFF0A2B55), Color(0xFF04152E)],
+        colors: [Color(0xFF0B3970), Color(0xFF04152E)],
       ),
       borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: const Color(0xFF168DFF), width: 1.2),
+      border: Border.all(color: const Color(0xFF16BFFF), width: 1.5),
       boxShadow: const [
-        BoxShadow(color: Color(0x55108FFF), blurRadius: 22, spreadRadius: 1),
-        BoxShadow(color: Color(0x2210DFFF), blurRadius: 8),
+        BoxShadow(color: Color(0x77108FFF), blurRadius: 26, spreadRadius: 1),
+        BoxShadow(color: Color(0x4410DFFF), blurRadius: 12),
       ],
     ),
     child: ClipRRect(borderRadius: BorderRadius.circular(23), child: child),
@@ -358,10 +358,10 @@ class _HlpBottomNavigation extends StatelessWidget {
       child: Container(
         height: 76,
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [Color(0xFF08264C), Color(0xFF03152D)]),
+          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF0B3970), Color(0xFF03152D)]),
           borderRadius: BorderRadius.circular(38),
-          border: Border.all(color: const Color(0xFF168DFF), width: 1.2),
-          boxShadow: const [BoxShadow(color: Color(0x66108FFF), blurRadius: 20)],
+          border: Border.all(color: const Color(0xFF19C8FF), width: 1.5),
+          boxShadow: const [BoxShadow(color: Color(0x88108FFF), blurRadius: 24), BoxShadow(color: Color(0x3310EFFF), blurRadius: 10)],
         ),
         child: Row(
           children: [
@@ -386,7 +386,7 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.all(4),
     child: Material(
-      color: selected ? const Color(0xFF075C9E) : Colors.transparent,
+      color: selected ? const Color(0xFF087FC7) : Colors.transparent,
       borderRadius: BorderRadius.circular(34),
       child: InkWell(
         onTap: onTap,
@@ -395,8 +395,8 @@ class _NavItem extends StatelessWidget {
           decoration: selected
               ? BoxDecoration(
                   borderRadius: BorderRadius.circular(34),
-                  border: Border.all(color: const Color(0xFF08D9FF), width: 1.4),
-                  boxShadow: const [BoxShadow(color: Color(0xAA08BFFF), blurRadius: 18)],
+                  border: Border.all(color: const Color(0xFF38E9FF), width: 1.7),
+                  boxShadow: const [BoxShadow(color: Color(0xCC08BFFF), blurRadius: 22), BoxShadow(color: Color(0x448B4DFF), blurRadius: 12)],
                 )
               : null,
           child: Column(
@@ -578,7 +578,7 @@ class _DataServerPanel extends HookConsumerWidget {
             colors: [Color(0xFF08264B), Color(0xFF04152D)],
           ),
           borderRadius: BorderRadius.circular(22),
-          border: Border.all(color: const Color(0xFF168DFF), width: 1.1),
+          border: Border.all(color: const Color(0xFF18BFFF), width: 1.5),
           boxShadow: const [BoxShadow(color: Color(0x44108FFF), blurRadius: 22)],
         ),
         child: Column(
@@ -703,7 +703,7 @@ class _InfoMetric extends StatelessWidget {
     required this.color,
     required this.label,
     required this.value,
-    this.leading = '',
+    this.leading,
   });
 
   final IconData icon;
