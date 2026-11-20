@@ -178,9 +178,11 @@ class HomePage extends HookConsumerWidget {
                                   ],
                                 ),
                               ),
-                              const Gap(12),
+                              // Give the subscription selector and the main power dial
+                              // more breathing room so they read as two premium sections.
+                              const Gap(22),
                               const Center(child: ConnectionButton()),
-                              const Gap(12),
+                              const Gap(16),
                               const _LiveNetworkPanel(),
                               const Gap(10),
                               const _DataServerPanel(),
