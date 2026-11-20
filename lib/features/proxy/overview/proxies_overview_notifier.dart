@@ -11,6 +11,7 @@ import 'package:hiddify/core/preferences/preferences_provider.dart';
 import 'package:hiddify/core/utils/preferences_utils.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
+import 'package:hiddify/features/profile/data/profile_data_providers.dart';
 import 'package:hiddify/features/proxy/data/proxy_data_providers.dart';
 import 'package:hiddify/features/proxy/widget/upload_speed.dart';
 import 'package:hiddify/features/settings/data/config_option_repository.dart';
@@ -93,7 +94,7 @@ class ProxyPingStyleNotifier extends _$ProxyPingStyleNotifier {
 @riverpod
 class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
   @override
-  Stream<OutboundGroup?> build() {
+  Stream<OutboundGroup?> build() async* {
     ref.disposeDelay(const Duration(seconds: 15));
     final serviceRunning = ref.watch(serviceRunningProvider);
     final activeProfile = ref.watch(activeProfileProvider).valueOrNull;
@@ -107,6 +108,30 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
         catch (error) { loggy.warning('discarding invalid cached proxy list', error); }
       }
     }
+    // Read the saved subscription config before the VPN core starts. This makes
+    // the real server entries visible on a fresh install, before Connect is tapped.
+    if (activeProfile != null) {
+      try {
+        final repository = await ref.read(profileRepositoryProvider.future);
+        final configResult = await repository.generateConfig(activeProfile.id).run();
+        configResult.match(
+          (failure) => loggy.warning('could not generate active subscription config', failure),
+          (rawConfig) {
+            final parsed = _outboundGroupFromConfig(rawConfig);
+            if (parsed != null && parsed.items.isNotEmpty) {
+              cachedGroup = parsed;
+              if (cacheKey != null) {
+                unawaited(prefs.setString(cacheKey, base64Encode(parsed.writeToBuffer())));
+              }
+            }
+          },
+        );
+      } catch (error, stackTrace) {
+        loggy.warning('could not load subscription servers before connecting', error, stackTrace);
+      }
+    }
+    if (cachedGroup != null) yield cachedGroup;
+
     // Set up again when the app comes back from the background, on a new gRPC
     // channel; the stream below lives on the old one.
     ref.watch(coreRestartSignalProvider);
@@ -123,7 +148,7 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
     // subscription outbounds before the user starts the VPN service.
     Timer? resubscribe;
     ref.onDispose(() => resubscribe?.cancel());
-    return ref
+    yield* ref
         .watch(proxyRepositoryProvider)
         .watchProxies()
         // Log failures but still emit null so the page leaves the spinner. Filtering them
@@ -150,6 +175,67 @@ class ProxiesOverviewNotifier extends _$ProxiesOverviewNotifier with AppLogger {
           _resubscribeDelay = doubled < _maxResubscribeDelay ? doubled : _maxResubscribeDelay;
         })
         .asyncMap((proxies) async => await _sortOutbounds(proxies, sortBy));
+  }
+
+  /// Builds a display-only server list from the saved generated config.
+  /// The core remains responsible for actual connection and server selection.
+  OutboundGroup? _outboundGroupFromConfig(String rawConfig) {
+    final decoded = jsonDecode(rawConfig);
+    if (decoded is! Map<String, dynamic>) return null;
+    final rawOutbounds = decoded['outbounds'];
+    if (rawOutbounds is! List) return null;
+
+    final byTag = <String, Map<String, dynamic>>{};
+    for (final item in rawOutbounds) {
+      if (item is Map) {
+        final outbound = Map<String, dynamic>.from(item);
+        final tag = outbound['tag'];
+        if (tag is String && tag.isNotEmpty) byTag[tag] = outbound;
+      }
+    }
+
+    final selectors = byTag.values.where((item) {
+      final type = item['type'];
+      return type == 'selector' || type == 'urltest';
+    }).toList();
+    if (selectors.isEmpty) return null;
+
+    final selector = selectors.firstWhere(
+      (item) => (item['tag'] as String? ?? '').toLowerCase().contains('proxy'),
+      orElse: () => selectors.first,
+    );
+    final tag = selector['tag'] as String? ?? 'proxy';
+    final references = selector['outbounds'];
+    if (references is! List) return null;
+
+    final items = <OutboundInfo>[];
+    for (final reference in references) {
+      if (reference is! String) continue;
+      final outbound = byTag[reference];
+      if (outbound == null) continue;
+      final type = outbound['type'] as String? ?? '';
+      if (type == 'direct' || type == 'block' || type == 'dns' || type == 'selector' || type == 'urltest') continue;
+      final server = OutboundInfo(
+        tag: reference,
+        tagDisplay: reference,
+        type: type,
+        host: outbound['server'] as String? ?? '',
+        port: outbound['server_port'] is int ? outbound['server_port'] as int : 0,
+        isGroup: false,
+        isVisible: true,
+        isSelected: reference == (selector['default'] as String? ?? references.firstOrNull),
+      );
+      items.add(server);
+    }
+    if (items.isEmpty) return null;
+    final selected = (selector['default'] as String?) ?? items.first.tag;
+    return OutboundGroup(
+      tag: tag,
+      type: selector['type'] as String? ?? 'selector',
+      selected: selected,
+      selectable: true,
+      items: items,
+    );
   }
 
   bool? _lastServiceRunning;
