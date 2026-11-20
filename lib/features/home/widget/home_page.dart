@@ -12,7 +12,6 @@ import 'package:hiddify/core/router/bottom_sheets/bottom_sheets_notifier.dart';
 import 'package:hiddify/features/home/widget/connection_button.dart';
 import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
 import 'package:hiddify/features/profile/notifier/active_profile_notifier.dart';
-import 'package:hiddify/features/profile/widget/profile_tile.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
@@ -35,6 +34,7 @@ class HomePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final activeProfile = ref.watch(activeProfileProvider);
+    final selectedOutbound = ref.watch(activeProxyNotifierProvider).valueOrNull;
     final darkTheme = theme.copyWith(
       brightness: Brightness.dark,
       // ProfileTile and other upstream widgets inherit this text palette. The home
@@ -124,21 +124,59 @@ class HomePage extends HookConsumerWidget {
                         padding: const EdgeInsets.fromLTRB(16, 10, 16, 108),
                         sliver: SliverList(
                           delegate: SliverChildListDelegate([
-                            switch (activeProfile) {
-                              AsyncData(value: final profile?) => _NeonCard(
-                                child: ProfileTile(
-                                  profile: profile,
-                                  isMain: true,
-                                  margin: EdgeInsets.zero,
+                            _NeonCard(
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  borderRadius: BorderRadius.circular(22),
+                                  onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProxiesOverview(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          width: 42,
+                                          height: 42,
+                                          decoration: BoxDecoration(
+                                            shape: BoxShape.circle,
+                                            color: const Color(0xFF08D9FF).withValues(alpha: .15),
+                                            border: Border.all(color: const Color(0xFF08D9FF), width: 1.2),
+                                            boxShadow: const [BoxShadow(color: Color(0x6608BFFF), blurRadius: 12)],
+                                          ),
+                                          child: const Icon(Icons.bolt_rounded, color: Color(0xFF08D9FF), size: 25),
+                                        ),
+                                        const Gap(12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                selectedOutbound?.name ?? 'Choose a server',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w800),
+                                              ),
+                                              const Gap(3),
+                                              Text(
+                                                switch (activeProfile) {
+                                                  AsyncData(value: final profile?) => profile.name,
+                                                  _ => 'Tap to select from your subscription',
+                                                },
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: const TextStyle(color: Color(0xFFB8D8F4), fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        const Icon(Icons.keyboard_arrow_down_rounded, color: Color(0xFF08D9FF), size: 28),
+                                      ],
+                                    ),
+                                  ),
                                 ),
                               ),
-                              _ => const _NeonCard(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Text('Select a server to get started'),
-                                ),
-                              ),
-                            },
+                            ),
                             const Gap(22),
                             const Center(child: ConnectionButton()),
                             const Gap(22),
