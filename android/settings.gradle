@@ -10,8 +10,11 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
-        mavenCentral()
+        // Resolve Kotlin Gradle transitive artifacts from Maven Central first.
+        // Explicit URL also avoids relying on plugin-portal proxy metadata.
+        maven { url = uri("https://repo.maven.apache.org/maven2") }
         google()
+        mavenCentral()
         gradlePluginPortal()
     }
 }
