@@ -157,7 +157,7 @@ class HomePage extends HookConsumerWidget {
           ],
         ),
         bottomNavigationBar: _HlpBottomNavigation(
-          onServers: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
+          onServers: () => ref.read(bottomSheetsNotifierProvider.notifier).showProxiesOverview(),
           onSettings: () => context.goNamed('settings'),
         ),
       ),
