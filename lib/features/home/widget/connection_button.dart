@@ -130,7 +130,7 @@ class ConnectionButton extends HookConsumerWidget {
         // the traffic waits for the chain hop: still on its way
         _Look.connected when hopPending => const Color(0xFF455FE9),
         _Look.connected => const Color(0xFF45FF8B),
-        _Look.noProxies => const Color(0xFFFFD83D),
+        _Look.noProxies => const Color(0xFFFF354F),
         _Look.failed => const Color(0xFFFF354F),
         // the logo's own blue while the connection is on its way
         _Look.connecting || _Look.waiting || _Look.hotReloading || _Look.disconnecting => const Color(0xFFFFC629),
