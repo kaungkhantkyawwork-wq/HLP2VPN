@@ -134,7 +134,7 @@ class HomePage extends HookConsumerWidget {
                             children: [
                               _CyberServerSelector(
                                 onTap: () => ref.read(bottomSheetsNotifierProvider.notifier).showProfilesOverview(),
-                                onRefresh: activeProfile.valueOrNull?.name != 'HLP2VPN Servers'
+                                onRefresh: activeProfile.valueOrNull != null && activeProfile.valueOrNull!.name != 'HLP2VPN Servers'
                                     ? () => ref.read(foregroundProfilesUpdateNotifierProvider.notifier).trigger()
                                     : null,
                               ),
