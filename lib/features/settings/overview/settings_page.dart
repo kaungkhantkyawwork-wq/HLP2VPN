@@ -94,7 +94,7 @@ class SettingsPage extends HookConsumerWidget {
             Padding(
               padding: const EdgeInsets.only(right: 8),
               child: Image.asset(
-                'assets/images/source/hlp2vpn_header_logo.png',
+                'assets/images/source/hlp2vpn_full_logo.png',
                 width: 112,
                 height: 38,
                 fit: BoxFit.contain,
