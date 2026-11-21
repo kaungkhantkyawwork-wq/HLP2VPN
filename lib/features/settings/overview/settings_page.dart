@@ -240,31 +240,41 @@ class SettingsPage extends HookConsumerWidget {
                     ),
                   ],
                 ),
-              Row(
-                children: [
-                  Expanded(
-                    child: SettingsSection(
-                      compact: true,
-                      title: t.pages.settings.dns.title,
-                      icon: Icons.dns_rounded,
-                      subtitle: const Text('DNS servers & resolution'),
-                      accent: const Color(0xFF00CFFF),
-                      namedLocation: context.namedLocation('dnsOptions'),
+              if (ref.watch(hasAnyProfileProvider).value ?? false)
+                Row(
+                  children: [
+                    Expanded(
+                      child: SettingsSection(
+                        compact: true,
+                        title: t.pages.settings.dns.title,
+                        icon: Icons.dns_rounded,
+                        subtitle: const Text('DNS servers & resolution'),
+                        accent: const Color(0xFF00CFFF),
+                        namedLocation: context.namedLocation('dnsOptions'),
+                      ),
                     ),
-                  ),
-                  const Gap(10),
-                  Expanded(
-                    child: SettingsSection(
-                      compact: true,
-                      title: t.pages.settings.inbound.title,
-                      icon: Icons.input_rounded,
-                      subtitle: const Text('VPN & local proxy options'),
-                      accent: const Color(0xFF08BFA4),
-                      namedLocation: context.namedLocation('inboundOptions'),
+                    const Gap(10),
+                    Expanded(
+                      child: SettingsSection(
+                        compact: true,
+                        title: t.pages.settings.inbound.title,
+                        icon: Icons.input_rounded,
+                        subtitle: const Text('VPN & local proxy options'),
+                        accent: const Color(0xFF08BFA4),
+                        namedLocation: context.namedLocation('inboundOptions'),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                )
+              else
+                SettingsSection(
+                  compact: true,
+                  title: t.pages.settings.inbound.title,
+                  icon: Icons.input_rounded,
+                  subtitle: const Text('VPN & local proxy options'),
+                  accent: const Color(0xFF08BFA4),
+                  namedLocation: context.namedLocation('inboundOptions'),
+                ),
               SettingsSection(
                 compact: true,
                 title: t.pages.settings.tlsTricks.title,
@@ -298,7 +308,7 @@ class SettingsPage extends HookConsumerWidget {
             ],
           ),
         ),
-      ),,
+      ),
       ),
     );
   }
