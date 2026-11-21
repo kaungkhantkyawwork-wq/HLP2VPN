@@ -27,6 +27,12 @@ class GeneralPage extends HookConsumerWidget {
       body: ListView(
         children: [
           const LocalePrefTile(),
+          SwitchListTile.adaptive(
+            title: Text(t.pages.settings.general.autoIpCheck),
+            secondary: const Icon(Icons.flag_rounded),
+            value: ref.watch(Preferences.autoCheckIp),
+            onChanged: ref.read(Preferences.autoCheckIp.notifier).update,
+          ),
           if (PlatformUtils.isAndroid) ...[
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.dynamicNotification),
