@@ -201,7 +201,11 @@ class ConnectionButton extends HookConsumerWidget {
   /// Connects, or sends the user to add a profile when there is none.
   Future<void> _connect(WidgetRef ref) async {
     final dialogs = ref.read(dialogNotifierProvider.notifier);
-    if (ref.read(activeProfileProvider).valueOrNull == null) {
+    // The active-profile stream can still be loading on a fresh install/start.
+    // A null valueOrNull during AsyncLoading is not proof that the user has no profile.
+    // Wait for its first database-backed value before deciding to show the empty-profile dialog.
+    final activeProfile = await ref.read(activeProfileProvider.future);
+    if (activeProfile == null) {
       await dialogs.showNoActiveProfile();
       ref.read(bottomSheetsNotifierProvider.notifier).showAddProfile();
       return;
