@@ -33,6 +33,8 @@ class SettingsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(translationsProvider).requireValue;
+    // Keep the final profile-enabled layout visible while profile state is loading.
+    final hasAnyProfile = ref.watch(hasAnyProfileProvider).valueOrNull ?? true;
     // final scrollController = useScrollController();
 
     // useMemoized(
@@ -207,7 +209,7 @@ class SettingsPage extends HookConsumerWidget {
               const Gap(5),
               _SettingsGroupLabel(title: 'NETWORK & SECURITY'),
               const Gap(2),
-              if (ref.watch(hasAnyProfileProvider).value ?? false)
+              if (hasAnyProfile)
                 Row(
                   children: [
                     Expanded(
@@ -259,7 +261,7 @@ class SettingsPage extends HookConsumerWidget {
                     ),
                   ],
                 ),
-              if (ref.watch(hasAnyProfileProvider).value ?? false)
+              if (hasAnyProfile)
                 Row(
                   children: [
                     Expanded(
