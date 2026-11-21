@@ -33,8 +33,6 @@ class SettingsPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = ref.watch(translationsProvider).requireValue;
-    // Keep the final profile-enabled layout visible while profile state is loading.
-    final hasAnyProfile = ref.watch(hasAnyProfileProvider).valueOrNull ?? true;
     // final scrollController = useScrollController();
 
     // useMemoized(
@@ -209,93 +207,38 @@ class SettingsPage extends HookConsumerWidget {
               const Gap(5),
               _SettingsGroupLabel(title: 'NETWORK & SECURITY'),
               const Gap(2),
-              if (hasAnyProfile)
-                Row(
-                  children: [
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.chain.title,
-                        icon: Icons.hub_rounded,
-                        subtitle: Text(t.pages.settings.chain.subtitle),
-                        accent: const Color(0xFF9A55F5),
-                        namedLocation: context.namedLocation('chainOptions'),
-                      ),
-                    ),
-                    const Gap(10),
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.routing.title,
-                        icon: Icons.alt_route_rounded,
-                        subtitle: const Text('Traffic rules & routing'),
-                        accent: const Color(0xFF168BFA),
-                        namedLocation: context.namedLocation('routingOptions'),
-                      ),
-                    ),
-                  ],
-                )
-              else
-                Row(
-                  children: [
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.routing.title,
-                        icon: Icons.alt_route_rounded,
-                        subtitle: const Text('Traffic rules & routing'),
-                        accent: const Color(0xFF168BFA),
-                        namedLocation: context.namedLocation('routingOptions'),
-                      ),
-                    ),
-                    const Gap(10),
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.dns.title,
-                        icon: Icons.dns_rounded,
-                        subtitle: const Text('DNS servers & resolution'),
-                        accent: const Color(0xFF00CFFF),
-                        namedLocation: context.namedLocation('dnsOptions'),
-                      ),
-                    ),
-                  ],
-                ),
-              if (hasAnyProfile)
-                Row(
-                  children: [
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.dns.title,
-                        icon: Icons.dns_rounded,
-                        subtitle: const Text('DNS servers & resolution'),
-                        accent: const Color(0xFF00CFFF),
-                        namedLocation: context.namedLocation('dnsOptions'),
-                      ),
-                    ),
-                    const Gap(10),
-                    Expanded(
-                      child: SettingsSection(
-                        compact: true,
-                        title: t.pages.settings.inbound.title,
-                        icon: Icons.input_rounded,
-                        subtitle: const Text('VPN & local proxy options'),
-                        accent: const Color(0xFF08BFA4),
-                        namedLocation: context.namedLocation('inboundOptions'),
-                      ),
-                    ),
-                  ],
-                )
-              else
-                SettingsSection(
-                  compact: true,
-                  title: t.pages.settings.inbound.title,
-                  icon: Icons.input_rounded,
-                  subtitle: const Text('VPN & local proxy options'),
-                  accent: const Color(0xFF08BFA4),
-                  namedLocation: context.namedLocation('inboundOptions'),
-                ),
+              SettingsSection(
+                compact: true,
+                title: t.pages.settings.chain.title,
+                icon: Icons.hub_rounded,
+                subtitle: Text(t.pages.settings.chain.subtitle),
+                accent: const Color(0xFF9A55F5),
+                namedLocation: context.namedLocation('chainOptions'),
+              ),
+              SettingsSection(
+                compact: true,
+                title: t.pages.settings.routing.title,
+                icon: Icons.alt_route_rounded,
+                subtitle: const Text('Traffic rules & routing'),
+                accent: const Color(0xFF168BFA),
+                namedLocation: context.namedLocation('routingOptions'),
+              ),
+              SettingsSection(
+                compact: true,
+                title: t.pages.settings.dns.title,
+                icon: Icons.dns_rounded,
+                subtitle: const Text('DNS servers & resolution'),
+                accent: const Color(0xFF00CFFF),
+                namedLocation: context.namedLocation('dnsOptions'),
+              ),
+              SettingsSection(
+                compact: true,
+                title: t.pages.settings.inbound.title,
+                icon: Icons.input_rounded,
+                subtitle: const Text('VPN & local proxy options'),
+                accent: const Color(0xFF08BFA4),
+                namedLocation: context.namedLocation('inboundOptions'),
+              ),
               SettingsSection(
                 compact: true,
                 title: t.pages.settings.tlsTricks.title,
