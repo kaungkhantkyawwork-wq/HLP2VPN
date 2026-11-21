@@ -83,7 +83,26 @@ class SettingsPage extends HookConsumerWidget {
       child: Scaffold(
       backgroundColor: navy,
       appBar: AppBar(
-        title: Text(t.pages.settings.title, style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: .2)),
+        title: Row(
+          children: [
+            Expanded(
+              child: Text(
+                t.pages.settings.title,
+                style: const TextStyle(fontWeight: FontWeight.w800, letterSpacing: .2),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: Image.asset(
+                'assets/images/source/hlp2vpn_header_logo.png',
+                width: 112,
+                height: 38,
+                fit: BoxFit.contain,
+                filterQuality: FilterQuality.high,
+              ),
+            ),
+          ],
+        ),
         actions: [
           MenuAnchor(
             menuChildren: <Widget>[
