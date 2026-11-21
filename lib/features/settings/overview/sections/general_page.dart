@@ -36,7 +36,6 @@ class GeneralPage extends HookConsumerWidget {
             ),
           ],
           if (PlatformUtils.isIOS)
-          if (PlatformUtils.isIOS)
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.alwaysOnVpn),
               secondary: const Icon(Icons.vpn_lock_rounded),
@@ -64,35 +63,6 @@ class GeneralPage extends HookConsumerWidget {
             ),
           ],
           if (PlatformUtils.isAndroid) const BatteryOptimizationWidget(),
-          // iOS ends a VPN that outgrows its memory budget: the limit is always on there
-          if (!PlatformUtils.isIOS)
-            SwitchListTile.adaptive(
-              title: Text(t.pages.settings.general.memoryLimit),
-              subtitle: Text(t.pages.settings.general.memoryLimitMsg),
-              secondary: const Icon(Icons.memory_rounded),
-              value: !ref.watch(Preferences.disableMemoryLimit),
-              onChanged: (value) async => await ref.read(Preferences.disableMemoryLimit.notifier).update(!value),
-            ),
-          // Keep the commonly used server speed test visible.
-          ListTile(
-            title: Text(t.pages.settings.general.speedTest),
-            subtitle: Text(
-              [
-                switch (ref.watch(ConfigOptions.speedTestDirection)) {
-                  SpeedTestDirection.download => t.pages.proxies.speedTest.download,
-                  SpeedTestDirection.upload => t.pages.proxies.speedTest.upload,
-                  SpeedTestDirection.both => t.pages.proxies.speedTest.both,
-                },
-                t.pages.settings.general.megabytes(n: ref.watch(ConfigOptions.uploadTestSize)),
-                if (ref.watch(ConfigOptions.uploadTestLimit) case final limit when limit > 0)
-                  t.pages.proxies.speedTest.fastest(n: limit)
-                else
-                  t.pages.proxies.speedTest.all,
-              ].join(' · '),
-            ),
-            leading: const Icon(Icons.speed_rounded),
-            onTap: () => ref.read(dialogNotifierProvider.notifier).showSpeedTest(start: false),
-          ),
           ExpansionTile(
             leading: const Icon(Icons.tune_rounded),
             title: const Text('Advanced settings'),
