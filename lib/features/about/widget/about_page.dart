@@ -51,13 +51,6 @@ class AboutPage extends HookConsumerWidget {
             await ref.read(appUpdateNotifierProvider.notifier).check();
           },
         ),
-      if (appInfo.release.allowCustomUpdateChecker)
-        SwitchListTile.adaptive(
-          title: Text(t.pages.about.betaUpdates),
-          subtitle: Text(t.pages.about.betaUpdatesMsg),
-          value: ref.watch(Preferences.betaUpdates),
-          onChanged: ref.read(Preferences.betaUpdates.notifier).update,
-        ),
       if (PlatformUtils.isDesktop)
         ListTile(
           title: Text(t.pages.about.openWorkingDir),
