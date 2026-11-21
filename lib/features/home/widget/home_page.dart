@@ -193,7 +193,7 @@ class _CyberServerSelector extends StatelessWidget {
                   const SizedBox(
                     width: 66,
                     child: Center(
-                      child: Icon(Icons.dns_rounded, color: Color(0xFF20E7FF), size: 43),
+                      child: Icon(Icons.public_rounded, color: Color(0xFF20E7FF), size: 43),
                     ),
                   ),
                   Container(width: 1.2, height: 48, color: const Color(0x6653DFFF)),
@@ -364,12 +364,6 @@ class _CyberSelectorPainter extends CustomPainter {
       ..strokeCap = StrokeCap.round;
     canvas.drawLine(Offset(size.width * .43, 2), Offset(size.width * .57, 2), accent);
     canvas.drawLine(Offset(size.width * .43, size.height - 2), Offset(size.width * .57, size.height - 2), accent);
-    for (var i = 0; i < 4; i++) {
-      final xLeft = size.width * (.045 + i * .012);
-      final xRight = size.width * (.955 - i * .012);
-      canvas.drawLine(Offset(xLeft, size.height * (.48 + i * .055)), Offset(xLeft + 5, size.height * (.53 + i * .055)), accent);
-      canvas.drawLine(Offset(xRight, size.height * (.48 + i * .055)), Offset(xRight - 5, size.height * (.53 + i * .055)), accent);
-    }
   }
 
   @override
