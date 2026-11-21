@@ -5,6 +5,7 @@ import 'package:hiddify/core/preferences/general_preferences.dart';
 import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
+import 'package:hiddify/features/proxy/active/ip_widget.dart';
 import 'package:hiddify/features/proxy/keep_top/keep_top_widgets.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/proxy/overview/proxies_overview_notifier.dart';
@@ -68,9 +69,9 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                   // chosen inside that group. The main proxy group can select "lowest", but
                   // showing that selector tag is not the actual server name.
                   final activeServer = ref.watch(activeProxyCardProvider)?.server;
-                  final bestServerName = activeServer?.nameWithDetour ??
-                      group.items.where((item) => item.tag == group.selected).firstOrNull?.nameWithDetour ??
-                      'Finding best server…';
+                  final bestServer = activeServer ??
+                      group.items.where((item) => item.tag == group.selected).firstOrNull;
+                  final bestServerName = bestServer?.nameWithDetour ?? 'Finding best server…';
 
                   Widget serverCard(OutboundInfo proxy) {
                     final selected = group.selected == proxy.tag;
@@ -153,7 +154,25 @@ class ProxiesOverviewPage extends HookConsumerWidget with PresLogger {
                                         borderRadius: BorderRadius.circular(15),
                                         border: Border.all(color: const Color(0xAA50E9FF)),
                                       ),
-                                      child: const Icon(Icons.auto_awesome_rounded, color: Colors.white, size: 27),
+                                      child: Stack(
+                                        alignment: Alignment.center,
+                                        children: [
+                                          if (bestServer != null)
+                                            IPCountryFlag(
+                                              countryCode: bestServer.ipinfo.countryCode,
+                                              organization: bestServer.ipinfo.org,
+                                              size: 42,
+                                              radius: 10,
+                                            )
+                                          else
+                                            const Icon(Icons.public_rounded, color: Colors.white, size: 27),
+                                          const Positioned(
+                                            right: 0,
+                                            bottom: 0,
+                                            child: Icon(Icons.auto_awesome_rounded, color: Color(0xFFFFE28A), size: 14),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                     const Gap(14),
                                     Expanded(
