@@ -46,7 +46,7 @@ class AppUpdateNotifier extends _$AppUpdateNotifier with AppLogger {
     }
     return ref
         .read(appUpdateRepositoryProvider)
-        .getLatestVersion(includePreReleases: ref.read(Preferences.betaUpdates))
+        .getLatestVersion(includePreReleases: false)
         .match(
           (err) {
             loggy.warning("failed to get latest version", err);
