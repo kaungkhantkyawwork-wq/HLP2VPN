@@ -129,6 +129,11 @@ Future<void> lazyBootstrap(WidgetsBinding widgetsBinding, Environment env) async
   );
   await _safeInit("hiddify-core", () => container.read(hiddifyCoreServiceProvider).init());
 
+  // Do not show Home until the first-install server subscription is ready. Otherwise
+  // Connect can be tapped while there is no active profile and incorrectly show
+  // the "Choose a profile" dialog. Existing subscriptions are read from the local DB.
+  await _init("HLP2VPN server subscription", () => _ensureHlp2VpnSubscription(container));
+
   // Eagerly listen to activeProxyNotifierProvider to force synchronous evaluation in microtasks,
   // avoiding lazy build-phase flushes and sibling dependency collisions on the Home page.
   container.listen(activeProxyNotifierProvider, (previous, next) {});
@@ -165,11 +170,6 @@ Future<void> lazyBootstrap(WidgetsBinding widgetsBinding, Environment env) async
       child: NativeSplash.cover(SentryUserInteractionWidget(child: const App())),
     ),
   );
-
-  // Install/update the built-in HLP2VPN server subscription after the first frame.
-  // The first install becomes active only when there is no active profile; existing user
-  // selections are preserved on later launches.
-  unawaited(_ensureHlp2VpnSubscription(container));
 
   // the router removes the splash after the first frame of its real routes; this only lets the frames through
   // if that screen never comes
@@ -264,6 +264,12 @@ Future<void> _ensureHlp2VpnSubscription(ProviderContainer container) async {
     final subscriptionExists = profiles.whereType<RemoteProfileEntity>().any(
       (profile) => profile.url == _hlp2VpnSubscriptionUrl,
     );
+    // A saved subscription is already available immediately from the local DB. Do not
+    // download it again on every launch; the regular profile updater handles refreshes.
+    if (subscriptionExists) {
+      Logger.bootstrap.info("HLP2VPN server subscription already available locally");
+      return;
+    }
     final activeProfile = await container.read(activeProfileProvider.future);
 
     await repository
