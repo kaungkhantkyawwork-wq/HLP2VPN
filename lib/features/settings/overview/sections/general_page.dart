@@ -27,20 +27,6 @@ class GeneralPage extends HookConsumerWidget {
       body: ListView(
         children: [
           const LocalePrefTile(),
-          const EnableAnalyticsPrefTile(),
-          SwitchListTile.adaptive(
-            title: Text(t.pages.settings.general.reduceAnimations),
-            subtitle: Text(t.pages.settings.general.reduceAnimationsMsg),
-            secondary: const Icon(Icons.animation_rounded),
-            value: ref.watch(Preferences.reduceAnimations),
-            onChanged: ref.read(Preferences.reduceAnimations.notifier).update,
-          ),
-          SwitchListTile.adaptive(
-            title: Text(t.pages.settings.general.autoIpCheck),
-            value: ref.watch(Preferences.autoCheckIp),
-            secondary: const Icon(Icons.flag_rounded),
-            onChanged: ref.read(Preferences.autoCheckIp.notifier).update,
-          ),
           if (PlatformUtils.isAndroid) ...[
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.dynamicNotification),
@@ -48,13 +34,8 @@ class GeneralPage extends HookConsumerWidget {
               value: ref.watch(Preferences.dynamicNotification),
               onChanged: ref.read(Preferences.dynamicNotification.notifier).update,
             ),
-            SwitchListTile.adaptive(
-              title: Text(t.pages.settings.general.hapticFeedback),
-              secondary: const Icon(Icons.vibration_rounded),
-              value: ref.watch(hapticServiceProvider),
-              onChanged: ref.read(hapticServiceProvider.notifier).updatePreference,
-            ),
           ],
+          if (PlatformUtils.isIOS)
           if (PlatformUtils.isIOS)
             SwitchListTile.adaptive(
               title: Text(t.pages.settings.general.alwaysOnVpn),
@@ -116,6 +97,48 @@ class GeneralPage extends HookConsumerWidget {
             leading: const Icon(Icons.tune_rounded),
             title: const Text('Advanced settings'),
             children: [
+              const EnableAnalyticsPrefTile(),
+              SwitchListTile.adaptive(
+                title: Text(t.pages.settings.general.reduceAnimations),
+                subtitle: Text(t.pages.settings.general.reduceAnimationsMsg),
+                secondary: const Icon(Icons.animation_rounded),
+                value: ref.watch(Preferences.reduceAnimations),
+                onChanged: ref.read(Preferences.reduceAnimations.notifier).update,
+              ),
+              if (PlatformUtils.isAndroid)
+                SwitchListTile.adaptive(
+                  title: Text(t.pages.settings.general.hapticFeedback),
+                  secondary: const Icon(Icons.vibration_rounded),
+                  value: ref.watch(hapticServiceProvider),
+                  onChanged: ref.read(hapticServiceProvider.notifier).updatePreference,
+                ),
+              if (!PlatformUtils.isIOS)
+                SwitchListTile.adaptive(
+                  title: Text(t.pages.settings.general.memoryLimit),
+                  subtitle: Text(t.pages.settings.general.memoryLimitMsg),
+                  secondary: const Icon(Icons.memory_rounded),
+                  value: !ref.watch(Preferences.disableMemoryLimit),
+                  onChanged: (value) async => await ref.read(Preferences.disableMemoryLimit.notifier).update(!value),
+                ),
+              ListTile(
+                title: Text(t.pages.settings.general.speedTest),
+                subtitle: Text(
+                  [
+                    switch (ref.watch(ConfigOptions.speedTestDirection)) {
+                      SpeedTestDirection.download => t.pages.proxies.speedTest.download,
+                      SpeedTestDirection.upload => t.pages.proxies.speedTest.upload,
+                      SpeedTestDirection.both => t.pages.proxies.speedTest.both,
+                    },
+                    t.pages.settings.general.megabytes(n: ref.watch(ConfigOptions.uploadTestSize)),
+                    if (ref.watch(ConfigOptions.uploadTestLimit) case final limit when limit > 0)
+                      t.pages.proxies.speedTest.fastest(n: limit)
+                    else
+                      t.pages.proxies.speedTest.all,
+                  ].join(' · '),
+                ),
+                leading: const Icon(Icons.speed_rounded),
+                onTap: () => ref.read(dialogNotifierProvider.notifier).showSpeedTest(start: false),
+              ),
               ValuePreferenceWidget(
                 value: ref.watch(ConfigOptions.connectionTestUrl),
                 preferences: ref.watch(ConfigOptions.connectionTestUrl.notifier),
