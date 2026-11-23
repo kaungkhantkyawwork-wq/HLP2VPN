@@ -926,15 +926,12 @@ class _InfoMetric extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  softWrap: false,
-                  style: const TextStyle(color: Colors.white70, fontSize: 12),
-                ),
+              Text(
+                label,
+                maxLines: 2,
+                softWrap: true,
+                overflow: TextOverflow.visible,
+                style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.15),
               ),
               const Gap(4),
               Row(
@@ -944,15 +941,12 @@ class _InfoMetric extends StatelessWidget {
                     const Gap(5),
                   ],
                   Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        value,
-                        maxLines: 1,
-                        softWrap: false,
-                        style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800),
-                      ),
+                    child: Text(
+                      value,
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.visible,
+                      style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800, height: 1.15),
                     ),
                   ),
                 ],
