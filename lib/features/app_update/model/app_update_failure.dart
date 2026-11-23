@@ -18,3 +18,8 @@ sealed class AppUpdateFailure with _$AppUpdateFailure, Failure {
     };
   }
 }
+
+/// The GitHub releases endpoint is reachable, but no stable release has been published yet.
+class NoStableReleaseException implements Exception {
+  const NoStableReleaseException();
+}
