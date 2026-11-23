@@ -478,10 +478,19 @@ class _ConnectionButton extends HookWidget {
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w700),
                                 ),
-                                if (look == _Look.connecting || look == _Look.waiting) ...[
-                                  const SizedBox(height: 4),
-                                  const Text('Please wait', style: TextStyle(color: Color(0xFFD7F5FF), fontSize: 12)),
-                                ],
+                                // Keep this line's space in every state. The Home page scales
+                                // its full content with FittedBox; removing this row on Connected
+                                // changed the column's height and made the whole screen jump.
+                                const SizedBox(height: 4),
+                                SizedBox(
+                                  height: 15,
+                                  child: (look == _Look.connecting || look == _Look.waiting)
+                                      ? const Text(
+                                          'Please wait',
+                                          style: TextStyle(color: Color(0xFFD7F5FF), fontSize: 12),
+                                        )
+                                      : const SizedBox.shrink(),
+                                ),
                               ],
                             ),
                           ),
