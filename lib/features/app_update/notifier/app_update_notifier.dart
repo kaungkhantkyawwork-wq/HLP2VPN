@@ -49,6 +49,10 @@ class AppUpdateNotifier extends _$AppUpdateNotifier with AppLogger {
         .getLatestVersion(includePreReleases: false)
         .match(
           (err) {
+            if (err is AppUpdateUnexpectedFailure && err.error is NoStableReleaseException) {
+              loggy.info("no stable HLP2VPN release has been published yet");
+              return state = const AppUpdateState.notAvailable();
+            }
             loggy.warning("failed to get latest version", err);
             return state = AppUpdateState.error(err);
           },
