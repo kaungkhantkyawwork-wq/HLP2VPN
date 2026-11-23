@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gap/gap.dart';
 import 'package:hiddify/core/localization/translations.dart';
 import 'package:hiddify/core/model/constants.dart';
 import 'package:hiddify/core/router/adaptive_layout/shell_route_action.dart';
@@ -192,14 +193,16 @@ class MyAdaptiveLayout extends HookConsumerWidget {
                       Expanded(child: Semantics(container: true, child: branchContent)),
                     ],
                   ),
-            bottomNavigationBar: isMobileBreakpoint &&
-                    navigationShell.currentIndex != getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'home')
-                ? FocusScope(
-                    node: navScopeNode,
-                    child: NavigationBar(
-                      selectedIndex: navigationShell.currentIndex <= 1 ? navigationShell.currentIndex : 0,
-                      destinations: _navDests(_actions(t, showProfilesAction, isMobileBreakpoint)),
-                      onDestinationSelected: (index) => _onTap(context, index),
+            bottomNavigationBar: isMobileBreakpoint
+                ? _HlpBottomNavigation(
+                    selected: _selectedMobileTab(context, navigationShell, isMobileBreakpoint, showProfilesAction),
+                    onHome: () => _goMobileHome(navigationShell, isMobileBreakpoint, showProfilesAction),
+                    onServers: () => context.goNamed('proxies'),
+                    onSettings: () => navigationShell.goBranch(
+                      getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'settings'),
+                      initialLocation: navigationShell.currentIndex == getIndexOfBranch(
+                        isMobileBreakpoint, showProfilesAction, 'settings',
+                      ),
                     ),
                   )
                 : null,
@@ -207,6 +210,27 @@ class MyAdaptiveLayout extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  int _selectedMobileTab(
+    BuildContext context,
+    StatefulNavigationShell shell,
+    bool isMobileBreakpoint,
+    bool showProfilesAction,
+  ) {
+    final path = GoRouter.of(context).routeInformationProvider.value.uri.path;
+    if (path.startsWith('/home/proxies')) return 1;
+    if (shell.currentIndex == getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'settings')) return 2;
+    return 0;
+  }
+
+  void _goMobileHome(
+    StatefulNavigationShell shell,
+    bool isMobileBreakpoint,
+    bool showProfilesAction,
+  ) {
+    final homeIndex = getIndexOfBranch(isMobileBreakpoint, showProfilesAction, 'home');
+    shell.goBranch(homeIndex, initialLocation: true);
   }
 
   // shell route action onTap
@@ -226,4 +250,125 @@ class MyAdaptiveLayout extends HookConsumerWidget {
       actions.map((e) => NavigationDestination(icon: Icon(e.icon), label: e.title)).toList();
   List<NavigationRailDestination> _navRailDests(List<ShellRouteAction> actions) =>
       actions.map((e) => NavigationRailDestination(icon: Icon(e.icon), label: Text(e.title))).toList();
+}
+
+
+class _HlpBottomNavigation extends StatelessWidget {
+  const _HlpBottomNavigation({
+    required this.selected,
+    required this.onHome,
+    required this.onServers,
+    required this.onSettings,
+  });
+
+  final int selected;
+  final VoidCallback onHome;
+  final VoidCallback onServers;
+  final VoidCallback onSettings;
+
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    top: false,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
+      child: Container(
+        height: 76,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [Color(0xFF0B3970), Color(0xFF03152D)],
+          ),
+          borderRadius: BorderRadius.circular(38),
+          border: Border.all(color: const Color(0xFF19C8FF), width: 1.5),
+          boxShadow: const [
+            BoxShadow(color: Color(0x88108FFF), blurRadius: 24),
+            BoxShadow(color: Color(0x3310EFFF), blurRadius: 10),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: _HlpNavItem(
+                icon: Icons.home_rounded,
+                label: 'Home',
+                selected: selected == 0,
+                onTap: onHome,
+              ),
+            ),
+            Expanded(
+              child: _HlpNavItem(
+                icon: Icons.dns_rounded,
+                label: 'Servers',
+                selected: selected == 1,
+                onTap: onServers,
+              ),
+            ),
+            Expanded(
+              child: _HlpNavItem(
+                icon: Icons.settings_rounded,
+                label: 'Settings',
+                selected: selected == 2,
+                onTap: onSettings,
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+class _HlpNavItem extends StatelessWidget {
+  const _HlpNavItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.all(4),
+    child: Material(
+      color: selected ? const Color(0xFF087FC7) : Colors.transparent,
+      borderRadius: BorderRadius.circular(34),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(34),
+        child: Container(
+          decoration: selected
+              ? BoxDecoration(
+                  borderRadius: BorderRadius.circular(34),
+                  border: Border.all(color: const Color(0xFF38E9FF), width: 1.7),
+                  boxShadow: const [
+                    BoxShadow(color: Color(0xCC08BFFF), blurRadius: 22),
+                    BoxShadow(color: Color(0x448B4DFF), blurRadius: 12),
+                  ],
+                )
+              : null,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 25, color: selected ? const Color(0xFF08E5FF) : Colors.white),
+              const Gap(3),
+              Text(
+                label,
+                style: TextStyle(
+                  color: selected ? const Color(0xFF08E5FF) : Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
 }
