@@ -215,20 +215,45 @@ class IntroPage extends HookConsumerWidget with PresLogger {
                                   ),
                                 ),
                                 const Gap(14),
-                                TextButton.icon(
+                                // Keep the shield and its label as one centered,
+                                // clearly readable action on the dark welcome screen.
+                                TextButton(
                                   style: TextButton.styleFrom(
                                     foregroundColor: const Color(0xFF8DDFFF),
-                                    visualDensity: VisualDensity.compact,
+                                    backgroundColor: const Color(0xFF0C2342).withValues(alpha: .58),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 18,
+                                      vertical: 10,
+                                    ),
+                                    shape: StadiumBorder(
+                                      side: BorderSide(
+                                        color: const Color(0xFF08D9FF).withValues(alpha: .28),
+                                      ),
+                                    ),
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                   ),
                                   onPressed: () async {
                                     await UriUtils.tryLaunch(
                                       Uri.parse(Constants.privacyPolicyUrl),
                                     );
                                   },
-                                  icon: const Icon(Icons.shield_outlined, size: 16),
-                                  label: Text(
-                                    t.pages.about.privacyPolicy,
-                                    style: theme.textTheme.bodySmall,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(
+                                        Icons.shield_outlined,
+                                        size: 18,
+                                        color: Color(0xFF8DDFFF),
+                                      ),
+                                      const Gap(8),
+                                      Text(
+                                        t.pages.about.privacyPolicy,
+                                        style: theme.textTheme.bodyMedium?.copyWith(
+                                          color: const Color(0xFFBFEFFF),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 const Gap(18),
