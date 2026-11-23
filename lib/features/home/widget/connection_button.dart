@@ -388,7 +388,9 @@ class _ConnectionButton extends HookWidget {
     // Animate the outer orbit only while a connection is being established.
     // Not Connected, Connected and Failed keep their rings completely still.
     final moving = !still && ticking &&
-        (eclipseLook == EclipseLook.starting || eclipseLook == EclipseLook.waiting);
+        (eclipseLook == EclipseLook.starting ||
+            eclipseLook == EclipseLook.waiting ||
+            (eclipseLook == EclipseLook.connected && !flowStill));
     // counts the frames asked for: all it says is that the button is to be drawn again
     final frame = useValueNotifier(0);
     useEffect(() {
@@ -871,12 +873,18 @@ class _PremiumConnectDialPainter extends CustomPainter {
     // A subtle liquid-glass wave at the bottom of the dial.
     canvas.save();
     canvas.clipPath(Path()..addOval(face));
+    // A slow, continuous liquid wave while connected. The two sine phases keep
+    // the surface flowing naturally instead of moving the whole fill up and down.
+    final wavePhase = time * .9;
     final wave = Path()
-      ..moveTo(center.dx - faceRadius, center.dy + faceRadius * .12)
+      ..moveTo(center.dx - faceRadius, center.dy + faceRadius * (.12 + .045 * math.sin(wavePhase)))
       ..cubicTo(
-        center.dx - faceRadius * .45, center.dy + faceRadius * .58,
-        center.dx + faceRadius * .12, center.dy + faceRadius * .02,
-        center.dx + faceRadius, center.dy + faceRadius * .34,
+        center.dx - faceRadius * .45,
+        center.dy + faceRadius * (.58 + .055 * math.sin(wavePhase + 1.1)),
+        center.dx + faceRadius * .12,
+        center.dy + faceRadius * (.02 + .055 * math.sin(wavePhase + 2.2)),
+        center.dx + faceRadius,
+        center.dy + faceRadius * (.34 + .045 * math.sin(wavePhase + 3.1)),
       )
       ..lineTo(center.dx + faceRadius, center.dy + faceRadius)
       ..lineTo(center.dx - faceRadius, center.dy + faceRadius)
