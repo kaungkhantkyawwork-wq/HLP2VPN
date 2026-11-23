@@ -359,21 +359,9 @@ class _ConnectionButton extends HookWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) => wakeAmbientMotion());
       return null;
     }, [eclipseLook]);
-    // The light moves for as long as the endless decoration may run at all, not only for the
-    // while it runs after a change: a light that froze where it was, and then jumped with the
-    // traffic once a second, looked as if the app had hung.
-    final allowed = useValueListenable(ambientMotionAllowed);
-    // connecting, searching and disconnecting say the app is busy: they keep moving for as long as
-    // they last, also where the endless decoration may not run. A wave that froze half way looked
-    // stuck until the core gave up or connected
-    final busy = const {EclipseLook.starting, EclipseLook.waiting, EclipseLook.stopping}.contains(eclipseLook);
-    final ambient = busy || allowed;
-    final ticking = tickerOn && ambient;
-    // with reduce animations, and where the endless motion may not run (the window without focus,
-    // a low battery), the light stands still, as it was, and only steps with the traffic
-    final still = reduced || !ambient;
-    // reduce animations: connected shows the still light, after its own connect motion has played
-    final flowStill = reduceFlow && eclipseLook == EclipseLook.connected;
+    // Connecting, searching and disconnecting say the app is busy: they keep moving for as long
+    // as they last, also where the endless decoration may not run.
+    const busy = {EclipseLook.starting, EclipseLook.waiting, EclipseLook.stopping};
     // Once a look has settled, the light and the breathing move slowly enough for 20 fps; the
     // changes between looks keep 30. What a frame costs is mostly the frame itself, the whole
     // window drawn again, so this is a third less of it for as long as the app stays connected.
