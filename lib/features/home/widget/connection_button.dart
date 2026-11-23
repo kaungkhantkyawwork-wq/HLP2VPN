@@ -141,10 +141,6 @@ class ConnectionButton extends HookConsumerWidget {
         _ => Assets.images.disconnectNorouz,
       },
       useImage: today.day >= 19 && today.day <= 23 && today.month == 3,
-      // reduce animations stills only the light flowing round the button while connected; the
-      // radar, the connecting and disconnecting waves keep moving. The system's reduce motion
-      // stills the whole button.
-      reduceFlow: ref.watch(Preferences.reduceAnimations),
     );
     return button;
   }
@@ -233,7 +229,6 @@ class _ConnectionButton extends HookWidget {
     required this.buttonColor,
     required this.image,
     required this.useImage,
-    required this.reduceFlow,
   });
 
   final _Look look;
@@ -263,11 +258,6 @@ class _ConnectionButton extends HookWidget {
   final Color buttonColor;
   final AssetGenImage image;
   final bool useImage;
-
-  /// Reduce animations: while connected, the light round the button stands still, as it was when
-  /// it stopped, and only steps with the traffic; the logo stops breathing once it has settled.
-  /// The other looks keep their motion.
-  final bool reduceFlow;
 
   static const _size = 220.0;
 
@@ -359,9 +349,6 @@ class _ConnectionButton extends HookWidget {
       WidgetsBinding.instance.addPostFrameCallback((_) => wakeAmbientMotion());
       return null;
     }, [eclipseLook]);
-    // Connecting, searching and disconnecting say the app is busy: they keep moving for as long
-    // as they last, also where the endless decoration may not run.
-    const busy = {EclipseLook.starting, EclipseLook.waiting, EclipseLook.stopping};
     // Once a look has settled, the light and the breathing move slowly enough for 20 fps; the
     // changes between looks keep 30. What a frame costs is mostly the frame itself, the whole
     // window drawn again, so this is a third less of it for as long as the app stays connected.
