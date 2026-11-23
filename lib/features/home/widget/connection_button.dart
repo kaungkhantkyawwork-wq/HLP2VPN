@@ -544,9 +544,14 @@ class _ConnectionButton extends HookWidget {
           ),
         ),
         Gap(18 * scale),
-        Column(
-          children: [
-            Container(
+        // Reserve a fixed vertical slot for the status pill. Different translated
+        // labels and AnimatedText transitions must not resize the Home column and
+        // make the server selector / stats cards shift when connection state changes.
+        SizedBox(
+          height: 42,
+          child: Center(
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 38),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
               decoration: BoxDecoration(
                 color: buttonColor.withValues(alpha: .13),
@@ -556,6 +561,7 @@ class _ConnectionButton extends HookWidget {
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     look == _Look.connected ? Icons.verified_rounded
@@ -576,18 +582,22 @@ class _ConnectionButton extends HookWidget {
                 ],
               ),
             ),
-            AnimatedSwitcher(
-              layoutBuilder: uniqueKeysLayout(),
-              duration: const Duration(milliseconds: 250),
-              child: hint == null
-                  ? const SizedBox.shrink()
-                  : Text(
-                      hint!,
-                      key: ValueKey(hint),
-                      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                    ),
-            ),
-          ],
+          ),
+        ),
+        // Keep the optional hint's vertical space stable as well.
+        SizedBox(
+          height: 20,
+          child: AnimatedSwitcher(
+            layoutBuilder: uniqueKeysLayout(),
+            duration: const Duration(milliseconds: 250),
+            child: hint == null
+                ? const SizedBox.shrink()
+                : Text(
+                    hint!,
+                    key: ValueKey(hint),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+          ),
         ),
       ],
     );
