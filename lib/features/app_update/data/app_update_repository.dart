@@ -33,7 +33,7 @@ class AppUpdateRepositoryImpl with ExceptionHandler, InfraLogger implements AppU
       final response = await httpClient.get<List>(Constants.githubReleasesApiUrl);
       if (response.statusCode != 200 || response.data == null) {
         loggy.warning("failed to fetch latest version info");
-        return left(const AppUpdateFailure.unexpected());
+        return left(AppUpdateFailure.unexpected(StateError("GitHub releases request failed: HTTP ${response.statusCode}")));
       }
 
       final releases = [
@@ -41,7 +41,7 @@ class AppUpdateRepositoryImpl with ExceptionHandler, InfraLogger implements AppU
           if (GithubReleaseParser.parse((json as Map).cast<String, dynamic>()) case final parsed?)
             if (includePreReleases || !parsed.preRelease) parsed,
       ];
-      if (releases.isEmpty) return left(const AppUpdateFailure.unexpected());
+      if (releases.isEmpty) return left(AppUpdateFailure.unexpected(const NoStableReleaseException()));
       // the newest by version, not by the order GitHub lists them in
       final latest = releases.reduce((a, b) => _version(b) > _version(a) ? b : a);
       return right(latest);
