@@ -14,7 +14,6 @@ import 'package:hiddify/features/home/widget/local_proxy_hint.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_delay_indicator.dart';
 import 'package:hiddify/features/proxy/active/active_proxy_notifier.dart';
 import 'package:hiddify/features/proxy/active/ip_widget.dart';
-import 'package:hiddify/features/proxy/overview/proxies_overview_page.dart';
 import 'package:hiddify/features/proxy/model/proxy_entity.dart';
 import 'package:hiddify/features/connection/model/connection_status.dart';
 import 'package:hiddify/features/connection/notifier/connection_notifier.dart';
@@ -158,10 +157,6 @@ class HomePage extends HookConsumerWidget {
               ),
             ),
           ],
-        ),
-        bottomNavigationBar: _HlpBottomNavigation(
-          onServers: () => Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const ProxiesOverviewPage())),
-          onSettings: () => context.goNamed('settings'),
         ),
       ),
     );
@@ -514,78 +509,6 @@ class _NeonCard extends StatelessWidget {
       ],
     ),
     child: ClipRRect(borderRadius: BorderRadius.circular(23), child: child),
-  );
-}
-
-class _HlpBottomNavigation extends StatelessWidget {
-  const _HlpBottomNavigation({required this.onServers, required this.onSettings});
-  final VoidCallback onServers;
-  final VoidCallback onSettings;
-
-  @override
-  Widget build(BuildContext context) => SafeArea(
-    top: false,
-    child: Padding(
-      padding: const EdgeInsets.fromLTRB(14, 6, 14, 10),
-      child: Container(
-        height: 76,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(begin: Alignment.topLeft, end: Alignment.bottomRight, colors: [Color(0xFF0B3970), Color(0xFF03152D)]),
-          borderRadius: BorderRadius.circular(38),
-          border: Border.all(color: const Color(0xFF19C8FF), width: 1.5),
-          boxShadow: const [BoxShadow(color: Color(0x88108FFF), blurRadius: 24), BoxShadow(color: Color(0x3310EFFF), blurRadius: 10)],
-        ),
-        child: Row(
-          children: [
-            Expanded(child: _NavItem(icon: Icons.home_rounded, label: 'Home', selected: true, onTap: () {})),
-            Expanded(child: _NavItem(icon: Icons.dns_rounded, label: 'Servers', onTap: onServers)),
-            Expanded(child: _NavItem(icon: Icons.settings_rounded, label: 'Settings', onTap: onSettings)),
-          ],
-        ),
-      ),
-    ),
-  );
-}
-
-class _NavItem extends StatelessWidget {
-  const _NavItem({required this.icon, required this.label, required this.onTap, this.selected = false});
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(4),
-    child: Material(
-      color: selected ? const Color(0xFF087FC7) : Colors.transparent,
-      borderRadius: BorderRadius.circular(34),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(34),
-        child: Container(
-          decoration: selected
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.circular(34),
-                  border: Border.all(color: const Color(0xFF38E9FF), width: 1.7),
-                  boxShadow: const [BoxShadow(color: Color(0xCC08BFFF), blurRadius: 22), BoxShadow(color: Color(0x448B4DFF), blurRadius: 12)],
-                )
-              : null,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 25, color: selected ? const Color(0xFF08E5FF) : Colors.white),
-              const Gap(3),
-              Text(label, style: TextStyle(
-                color: selected ? const Color(0xFF08E5FF) : Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 12,
-              )),
-            ],
-          ),
-        ),
-      ),
-    ),
   );
 }
 
