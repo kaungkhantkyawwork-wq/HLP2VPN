@@ -6,7 +6,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:gap/gap.dart';
 import 'package:hiddify/core/localization/translations.dart';
-import 'package:hiddify/core/preferences/general_preferences.dart';
 import 'package:hiddify/core/router/bottom_sheets/bottom_sheets_notifier.dart';
 import 'package:hiddify/core/router/dialog/dialog_notifier.dart';
 import 'package:hiddify/core/theme/theme_extensions.dart';
@@ -360,7 +359,7 @@ class _ConnectionButton extends HookWidget {
     final interval = calm ? AmbientClock.decoration : AmbientClock.lively;
     // Keep the existing connecting motion, and let the connected liquid surface continue
     // flowing gently for as long as the button is visible. This is independent of the app's
-    // battery-saving ambient decorations and the optional reduced-flow preference; the system
+    // battery-saving ambient decorations; the system
     // reduce-motion setting and TickerMode are still respected.
     final moving = !reduced && tickerOn &&
         (eclipseLook == EclipseLook.starting ||
