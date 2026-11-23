@@ -780,20 +780,24 @@ class _DataServerPanel extends HookConsumerWidget {
             Row(
               children: [
                 Expanded(
+                  flex: 45,
                   child: _InfoMetric(
                     icon: Icons.bar_chart_rounded,
                     color: const Color(0xFF19D9FF),
                     label: 'Data Used',
                     value: total,
+                    singleLine: true,
                   ),
                 ),
                 Container(width: 1, height: 48, color: const Color(0x73168DFF)),
                 Expanded(
+                  flex: 55,
                   child: _InfoMetric(
                     icon: Icons.dns_rounded,
                     color: const Color(0xFF19D9FF),
                     label: serverLabel,
                     value: serverName,
+                    singleLine: true,
                     leading: activeServer == null || activeServer.ipinfo.countryCode.isEmpty
                         ? null
                         : IPCountryFlag(
@@ -897,6 +901,7 @@ class _InfoMetric extends StatelessWidget {
     required this.label,
     required this.value,
     this.leading,
+    this.singleLine = false,
   });
 
   final IconData icon;
@@ -904,6 +909,7 @@ class _InfoMetric extends StatelessWidget {
   final String label;
   final String value;
   final Widget? leading;
+  final bool singleLine;
 
   @override
   Widget build(BuildContext context) {
@@ -928,9 +934,9 @@ class _InfoMetric extends StatelessWidget {
             children: [
               Text(
                 label,
-                maxLines: 2,
-                softWrap: true,
-                overflow: TextOverflow.visible,
+                maxLines: singleLine ? 1 : 2,
+                softWrap: !singleLine,
+                overflow: singleLine ? TextOverflow.ellipsis : TextOverflow.visible,
                 style: const TextStyle(color: Colors.white70, fontSize: 12, height: 1.15),
               ),
               const Gap(4),
@@ -943,9 +949,9 @@ class _InfoMetric extends StatelessWidget {
                   Expanded(
                     child: Text(
                       value,
-                      maxLines: 2,
-                      softWrap: true,
-                      overflow: TextOverflow.visible,
+                      maxLines: singleLine ? 1 : 2,
+                      softWrap: !singleLine,
+                      overflow: singleLine ? TextOverflow.ellipsis : TextOverflow.visible,
                       style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.w800, height: 1.15),
                     ),
                   ),
