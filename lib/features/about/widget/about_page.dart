@@ -33,9 +33,9 @@ class AboutPage extends HookConsumerWidget {
               .read(dialogNotifierProvider.notifier)
               .showNewVersion(currentVersion: appInfo.presentVersion, newVersion: versionInfo, canIgnore: false);
         case AppUpdateStateError(:final error):
-          return ref.read(inAppNotificationControllerProvider).showErrorToast(t.presentShortError(error));
+          return ref.read(inAppNotificationControllerProvider).showErrorToast('Update စစ်ဆေးလို့ မရသေးပါ။ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်မံကြိုးစားပါ။');
         case AppUpdateStateNotAvailable():
-          return ref.read(inAppNotificationControllerProvider).showSuccessToast(t.pages.about.notAvailableMsg);
+          return ref.read(inAppNotificationControllerProvider).showSuccessToast('လက်ရှိအသုံးပြုနေသော Version သည် နောက်ဆုံး Version ဖြစ်ပါတယ်။ Update အသစ် မရှိသေးပါ။');
       }
     });
 
