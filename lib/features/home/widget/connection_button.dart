@@ -383,14 +383,14 @@ class _ConnectionButton extends HookWidget {
     // from a long wait to connected stopped the clock on the connect motion's first frame
     final calm = useValueListenable(settled) && now() - change.value.at > _settleAfter(eclipseLook);
     final interval = calm ? AmbientClock.decoration : AmbientClock.lively;
-    // still, nothing ticks; nor once connected has settled with the flowing light reduced, nor in
-    // a button that waits for a tap
-    // Animate the outer orbit only while a connection is being established.
-    // Not Connected, Connected and Failed keep their rings completely still.
-    final moving = !still && ticking &&
+    // Keep the existing connecting motion, and let the connected liquid surface continue
+    // flowing gently for as long as the button is visible. This is independent of the app's
+    // battery-saving ambient decorations and the optional reduced-flow preference; the system
+    // reduce-motion setting and TickerMode are still respected.
+    final moving = !reduced && tickerOn &&
         (eclipseLook == EclipseLook.starting ||
             eclipseLook == EclipseLook.waiting ||
-            (eclipseLook == EclipseLook.connected && !flowStill));
+            eclipseLook == EclipseLook.connected);
     // counts the frames asked for: all it says is that the button is to be drawn again
     final frame = useValueNotifier(0);
     useEffect(() {
@@ -932,7 +932,6 @@ class _PremiumConnectDialPainter extends CustomPainter {
         ..color = Colors.white.withValues(alpha: .56),
     );
 
-    // Only the connecting/waiting state gets a moving bright sweep.
     if (_connecting) {
       final start = (time * 1.75) % (math.pi * 2) - math.pi / 2;
       canvas.drawArc(
@@ -947,8 +946,32 @@ class _PremiumConnectDialPainter extends CustomPainter {
           ..color = Colors.white
           ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 5),
       );
+    } else if (look == EclipseLook.connected) {
+      // A restrained green orbit glides around the existing rim while connected.
+      // It adds a clear live-state cue without changing the dial's shape or layout.
+      final start = (time * .42) % (math.pi * 2) - math.pi / 2;
+      canvas.drawArc(
+        outer,
+        start,
+        .62,
+        false,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 4
+          ..strokeCap = StrokeCap.round
+          ..color = Color.lerp(stateColor, Colors.white, .48)!.withValues(alpha: .9)
+          ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
+      );
+      canvas.drawCircle(
+        center,
+        radius + 5,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 2
+          ..color = stateColor.withValues(alpha: .8),
+      );
     } else {
-      // Keep the other states still, but make the whole state ring vivid.
+      // Other settled states keep the existing still ring.
       canvas.drawCircle(
         center,
         radius + 5,
